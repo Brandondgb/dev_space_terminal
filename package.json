@@ -1,0 +1,9 @@
+{
+  "name": "dev-space-terminal",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Portfolio WebXR immersif pour The Dev Space Terminal",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}
