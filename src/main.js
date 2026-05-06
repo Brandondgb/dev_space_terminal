@@ -25,13 +25,18 @@ const progressInterval = setInterval(() => {
 }, 120);
 
 // Détecte si WebXR est disponible
-function checkWebXR() {
-  if (!navigator.xr) {
-    loaderHint.textContent = 'WebXR non disponible — redirection vers la version 2D...';
-    setTimeout(() => {
-      window.location.href = '/fallback/index.html';
-    }, 2000);
-    return false;
+async function checkWebXR() {
+  if (!navigator.xr) return false;
+  // Vérifie si une session immersive est réellement supportée
+  const supported = await navigator.xr.isSessionSupported('immersive-vr')
+    .catch(() => false);
+  if (!supported) {
+    // Ne pas rediriger automatiquement — juste afficher le bouton fallback
+    const btn = document.createElement('a');
+    btn.href = '/fallback/index.html';
+    btn.className = 'loader-fallback-btn';
+    btn.textContent = 'Ouvrir la version 2D →';
+    document.querySelector('.loader-inner')?.appendChild(btn);
   }
   return true;
 }
