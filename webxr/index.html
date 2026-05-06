@@ -7,8 +7,35 @@
     <title>The Dev Space Terminal — WebXR</title>
     <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
     <link rel="stylesheet" href="../src/styles/main.css" />
+    <style>
+      .return-home-btn {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 9999;
+        padding: 10px 14px;
+        border: 1px solid #00FFCC;
+        background: rgba(4, 7, 5, 0.88);
+        color: #00FFCC;
+        text-decoration: none;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.78rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        backdrop-filter: blur(8px);
+        transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+      }
+
+      .return-home-btn:hover {
+        transform: translateY(-1px);
+        background: #00FFCC;
+        color: #00110b;
+      }
+    </style>
   </head>
   <body>
+
+    <a class="return-home-btn" href="../index.html">← Retour accueil 2D</a>
 
     <!-- ═══════════════════════════════════════════
          LOADER / SPLASH SCREEN
@@ -40,7 +67,7 @@
       <!-- Assets (lazy loaded) -->
       <a-assets timeout="10000">
         <!-- Blazor Projects -->
-        <img id="img-overvue"  src="../assets/images/overvue-dashboard.pngs"  crossorigin="anonymous" />
+        <img id="img-overvue"  src="../assets/images/overvue-dashboard.png"  crossorigin="anonymous" />
         <img id="img-bmanager" src="../assets/images/bmanager.webp" crossorigin="anonymous" />
         <!-- Additional Projects (placeholder) -->
         <img id="img-optimabatis"   src="../assets/images/optimabatis.webp"   crossorigin="anonymous" />
