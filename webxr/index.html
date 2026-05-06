@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="The Dev Space Terminal — Portfolio WebXR de Brandon Degbe, développeur .NET & XR." />
+    <title>The Dev Space Terminal — WebXR</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body>
+
+    <!-- ═══════════════════════════════════════════
+         LOADER / SPLASH SCREEN
+         Affiché pendant l'init A-Frame / WebXR.
+         Retiré automatiquement via main.js
+    ═══════════════════════════════════════════ -->
+    <div id="loader">
+      <div class="loader-inner">
+        <p class="loader-title">THE DEV SPACE TERMINAL</p>
+        <p class="loader-sub">Initialisation WebXR...</p>
+        <div class="loader-bar-wrap">
+          <div class="loader-bar" id="loader-bar"></div>
+        </div>
+        <p class="loader-hint" id="loader-hint">Chargement de la scène</p>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         SCÈNE A-FRAME
+    ═══════════════════════════════════════════ -->
+    <a-scene
+      id="main-scene"
+      background="color: #000000"
+      renderer="antialias: true; colorManagement: true"
+      vr-mode-ui="enabled: true"
+      loading-screen="enabled: false"
+    >
+
+      <!-- Assets (lazy loaded) -->
+      <a-assets timeout="10000">
+        <!-- Blazor Projects -->
+        <img id="img-overvue"  src="/assets/images/overvue.webp"  crossorigin="anonymous" />
+        <img id="img-bmanager" src="/assets/images/bmanager.webp" crossorigin="anonymous" />
+        <!-- Additional Projects (placeholder) -->
+        <img id="img-optimabatis"   src="/assets/images/optimabatis.webp"   crossorigin="anonymous" />
+        <img id="img-nenia"         src="/assets/images/nenia.webp"         crossorigin="anonymous" />
+        <img id="img-optivote"      src="/assets/images/optivote.webp"      crossorigin="anonymous" />
+        <img id="img-burando"       src="/assets/images/burando.webp"       crossorigin="anonymous" />
+      </a-assets>
+
+      <!-- ── Caméra ── -->
+      <a-entity id="rig" position="0 1.6 4">
+        <a-camera
+          look-controls="reverseMouseDrag: false; touchEnabled: true"
+          wasd-controls="acceleration: 20"
+          cursor="fuse: false; rayOrigin: mouse"
+        >
+          <!-- Curseur de visée (desktop) -->
+          <a-entity
+            cursor="fuse: false"
+            position="0 0 -1"
+            geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.015"
+            material="color: #00FFCC; shader: flat; opacity: 0.7"
+          ></a-entity>
+        </a-camera>
+      </a-entity>
+
+      <!-- ── Sol cyber ── -->
+      <a-entity scene-floor></a-entity>
+
+      <!-- ── Lumières ── -->
+      <a-light type="ambient"      color="#112211" intensity="1.2"></a-light>
+      <a-light type="point" color="#2E9E72" intensity="1.5" position="0 3 0" distance="15"></a-light>
+      <a-light type="point" color="#00FFCC" intensity="0.4" position="-8 2 0" distance="10"></a-light>
+      <a-light type="point" color="#00FFCC" intensity="0.4" position="8 2 0"  distance="10"></a-light>
+
+      <!-- ── Hub Central (0, 0, 0) ── -->
+      <a-entity id="hub" hub-panel position="0 0 0"></a-entity>
+
+      <!-- ── Projects Bay (aile gauche) ── -->
+      <a-entity id="projects-bay" position="-8 0 0">
+        <!-- Titre de zone -->
+        <a-text
+          value="PROJECT HIGHLIGHTS"
+          color="#2E9E72"
+          font="monoid"
+          align="center"
+          position="0 3.5 0"
+          scale="1.2 1.2 1.2"
+        ></a-text>
+        <!-- Overvue -->
+        <a-entity
+          project-card="
+            title: Overvue;
+            description: Gestion de projets Blazor Server.\nDéployé sur Render.;
+            image: #img-overvue;
+            url: https://overvue.onrender.com"
+          position="-1.05 2.1 0"
+        ></a-entity>
+        <!-- BManager -->
+        <a-entity
+          project-card="
+            title: BManager;
+            description: Dashboard Blazor + MudBlazor\navec graphiques interactifs.;
+            image: #img-bmanager;
+            url: https://bmanager.onrender.com"
+          position="1.05 2.1 0"
+        ></a-entity>
+        <!-- OptimaBatis -->
+        <a-entity
+          project-card="
+            title: OptimaBatis;
+            description: App mobile pour réparations\net constructions. Flutter + Django.;
+            image: #img-optimabatis;
+            url: https://github.com/brandon311005"
+          position="-1.05 0.35 0"
+        ></a-entity>
+        <!-- NENIA -->
+        <a-entity
+          project-card="
+            title: NENIA;
+            description: Gestion boutique desktop.\nC# WinForms + PostgreSQL + API.;
+            image: #img-nenia;
+            url: https://github.com/brandon311005"
+          position="1.05 0.35 0"
+        ></a-entity>
+        <!-- Optivote -->
+        <a-entity
+          project-card="
+            title: Optivote;
+            description: App votes présidentiels.\nFlutter + Laravel (collectif).;
+            image: #img-optivote;
+            url: https://github.com/brandon311005"
+          position="-1.05 -1.7 0"
+        ></a-entity>
+        <!-- Burando Shoppu -->
+        <a-entity
+          project-card="
+            title: Burando Shoppu;
+            description: Gestion commandes desktop.\nJava - Dépôt Github.;
+            image: #img-burando;
+            url: https://github.com/brandon311005/Burando-Shoppu.git"
+          position="1.05 -1.7 0"
+        ></a-entity>
+      </a-entity>
+
+      <!-- ── Skills Core (aile droite) ── -->
+      <a-entity id="skills-core" position="8 0 0">
+        <!-- Titre de zone -->
+        <a-text
+          value="SKILLS CORE"
+          color="#2E9E72"
+          font="monoid"
+          align="center"
+          position="0 3.5 0"
+          scale="1.2 1.2 1.2"
+        ></a-text>
+        <!-- Orbs compétences principales -->
+        <a-entity skill-orb="label: C#;          color: #2E9E72" position="-1.5  2.5  0"></a-entity>
+        <a-entity skill-orb="label: Blazor;      color: #2E9E72" position=" 1.5  2.5  0"></a-entity>
+        <a-entity skill-orb="label: A-Frame/WebXR; color: #00FFCC" position=" 0    2.5 -1.5"></a-entity>
+        <a-entity skill-orb="label: MudBlazor;   color: #2E9E72" position="-1.5  1    0"></a-entity>
+        <a-entity skill-orb="label: Flutter;     color: #1A6B4A" position=" 1.5  1    0"></a-entity>
+        <a-entity skill-orb="label: React;       color: #61DAFB" position=" 0    1   -1.5"></a-entity>
+        <!-- Expertise Bars -->
+        <a-text value="Web Dev" color="#00FFCC" font="monoid" align="center" position="-1.5 -0.8 0" scale="0.8 0.8 0.8"></a-text>
+        <a-box material="color: #2E9E72" position="-1.5 -1.4 0" scale="1.5 0.2 0.1"></a-box>
+        <a-text value="75%" color="#00FFCC" font="monoid" align="center" position="-1.5 -1.8 0" scale="0.6 0.6 0.6"></a-text>
+        <a-text value="Desktop" color="#00FFCC" font="monoid" align="center" position="1.5 -0.8 0" scale="0.8 0.8 0.8"></a-text>
+        <a-box material="color: #2E9E72" position="1.5 -1.4 0" scale="1.8 0.2 0.1"></a-box>
+        <a-text value="87%" color="#00FFCC" font="monoid" align="center" position="1.5 -1.8 0" scale="0.6 0.6 0.6"></a-text>
+        <a-text value="Multimedia" color="#00FFCC" font="monoid" align="center" position="0 -2.8 0" scale="0.8 0.8 0.8"></a-text>
+        <a-box material="color: #2E9E72" position="0 -3.4 0" scale="1.6 0.2 0.1"></a-box>
+        <a-text value="80%" color="#00FFCC" font="monoid" align="center" position="0 -3.8 0" scale="0.6 0.6 0.6"></a-text>
+      </a-entity>
+
+      <!-- ── Experience Zone (aile arrière) ── -->
+      <a-entity id="experience" position="0 0 -8">
+        <!-- Titre -->
+        <a-text
+          value="EXPERIENCE & FORMATION"
+          color="#00FFCC"
+          font="monoid"
+          align="center"
+          position="0 3.5 0"
+          scale="1.2 1.2 1.2"
+        ></a-text>
+        <!-- Experience card -->
+        <a-box color="#0d1f14" material="opacity: 0.92; transparent: true; side: double" position="-1.4 1.25 0" scale="1.35 1.1 0.05"></a-box>
+        <a-text value="EXPERIENCE" color="#00FFCC" font="monoid" align="center" position="-1.4 1.85 0.03" scale="0.75 0.75 0.75"></a-text>
+        <a-text value=".Net Fullstack Developer" color="#2E9E72" font="monoid" align="center" position="-1.4 1.45 0.03" scale="0.62 0.62 0.62"></a-text>
+        <a-text value="SODSON CORP" color="#E0FFE8" font="monoid" align="center" position="-1.4 1.1 0.03" scale="0.54 0.54 0.54"></a-text>
+        <a-text value="Sept. 2025 → Aujourd'hui" color="#6aab89" font="monoid" align="center" position="-1.4 0.76 0.03" scale="0.5 0.5 0.5"></a-text>
+        <a-text value="Stage Dev Back-End C#" color="#2E9E72" font="monoid" align="center" position="-1.4 0.35 0.03" scale="0.58 0.58 0.58"></a-text>
+        <a-text value="SODSON CORP · Août 2024" color="#E0FFE8" font="monoid" align="center" position="-1.4 0.02 0.03" scale="0.5 0.5 0.5"></a-text>
+        <a-text value="Stage Dev Web Fullstack" color="#2E9E72" font="monoid" align="center" position="-1.4 -0.34 0.03" scale="0.58 0.58 0.58"></a-text>
+        <a-text value="Youpilab · 15 Mai → 15 Août 2025" color="#E0FFE8" font="monoid" align="center" position="-1.4 -0.67 0.03" scale="0.48 0.48 0.48"></a-text>
+
+        <!-- Education card -->
+        <a-box color="#0d1f14" material="opacity: 0.92; transparent: true; side: double" position="1.4 1.25 0" scale="1.35 1.1 0.05"></a-box>
+        <a-text value="FORMATION" color="#00FFCC" font="monoid" align="center" position="1.4 1.85 0.03" scale="0.75 0.75 0.75"></a-text>
+        <a-text value="Licence 3" color="#2E9E72" font="monoid" align="center" position="1.4 1.45 0.03" scale="0.62 0.62 0.62"></a-text>
+        <a-text value="2022 → Aujourd'hui" color="#6aab89" font="monoid" align="center" position="1.4 1.1 0.03" scale="0.5 0.5 0.5"></a-text>
+        <a-text value="Baccalauréat C" color="#2E9E72" font="monoid" align="center" position="1.4 0.7 0.03" scale="0.58 0.58 0.58"></a-text>
+        <a-text value="2022" color="#E0FFE8" font="monoid" align="center" position="1.4 0.38 0.03" scale="0.5 0.5 0.5"></a-text>
+        <a-text value="CERTIFICATIONS" color="#00FFCC" font="monoid" align="center" position="1.4 -0.05 0.03" scale="0.56 0.56 0.56"></a-text>
+        <a-text value="Desktop · Mobile · Web · BD" color="#E0FFE8" font="monoid" align="center" position="1.4 -0.38 0.03" scale="0.46 0.46 0.46"></a-text>
+      </a-entity>
+
+      <!-- ── Contact Zone (aile avant) ── -->
+      <a-entity id="contact" position="0 0 8">
+        <!-- Titre -->
+        <a-text
+          value="CONTACT"
+          color="#00FFCC"
+          font="monoid"
+          align="center"
+          position="0 3 0"
+          scale="1.2 1.2 1.2"
+        ></a-text>
+        <!-- Email -->
+        <a-text value="📧 brandondgbe95@gmail.com" color="#2E9E72" font="monoid" align="center" position="0 2 0" scale="0.7 0.7 0.7"></a-text>
+        <!-- Phone -->
+        <a-text value="📱 +229 52323535 / 58360861" color="#2E9E72" font="monoid" align="center" position="0 1.2 0" scale="0.7 0.7 0.7"></a-text>
+        <!-- GitHub -->
+        <a-text value="🐙 github.com/brandon311005" color="#2E9E72" font="monoid" align="center" position="0 0.4 0" scale="0.7 0.7 0.7"></a-text>
+        <!-- Languages -->
+        <a-text value="LANGUES" color="#00FFCC" font="monoid" align="center" position="0 -0.8 0" scale="0.9 0.9 0.9"></a-text>
+        <a-text value="🇫🇷 Français (Natif)" color="#2E9E72" font="monoid" align="center" position="0 -1.6 0" scale="0.6 0.6 0.6"></a-text>
+        <a-text value="🇬🇧 Anglais (Basique)" color="#2E9E72" font="monoid" align="center" position="0 -2.2 0" scale="0.6 0.6 0.6"></a-text>
+      </a-entity>
+
+      <!-- ── Skybox (étoilée) ── -->
+      <a-sky color="#020a05"></a-sky>
+
+    </a-scene>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

@@ -1,232 +1,323 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="The Dev Space Terminal — Portfolio WebXR de Brandon Degbe, développeur .NET & XR." />
-    <title>The Dev Space Terminal</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />
-    <link rel="stylesheet" href="/src/styles/main.css" />
-  </head>
-  <body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="The Dev Space Terminal — portail 2D de Brandon Degbe, .Net Fullstack | XR Dev | Flutter Dev" />
+  <title>The Dev Space Terminal</title>
+  <style>
+    :root {
+      --bg: #040705;
+      --panel: rgba(13, 31, 20, 0.9);
+      --line: #1a4a30;
+      --green: #2E9E72;
+      --cyan: #00FFCC;
+      --text: #E0FFE8;
+      --muted: #89b8a1;
+      --mono: 'Courier New', Courier, monospace;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+    }
 
-    <!-- ═══════════════════════════════════════════
-         LOADER / SPLASH SCREEN
-         Affiché pendant l'init A-Frame / WebXR.
-         Retiré automatiquement via main.js
-    ═══════════════════════════════════════════ -->
-    <div id="loader">
-      <div class="loader-inner">
-        <p class="loader-title">THE DEV SPACE TERMINAL</p>
-        <p class="loader-sub">Initialisation WebXR...</p>
-        <div class="loader-bar-wrap">
-          <div class="loader-bar" id="loader-bar"></div>
-        </div>
-        <p class="loader-hint" id="loader-hint">Chargement de la scène</p>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(0, 255, 204, 0.1), transparent 24%),
+        linear-gradient(180deg, #020403 0%, #040705 100%);
+      color: var(--text);
+      font-family: var(--mono);
+      line-height: 1.6;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .frame {
+      width: min(1080px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: clamp(20px, 4vw, 40px);
+    }
+
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 16px;
+      margin-bottom: 26px;
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.28em;
+      font-size: 0.72rem;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      color: var(--green);
+      letter-spacing: 0.14em;
+      font-size: clamp(1.6rem, 4.8vw, 3rem);
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      max-width: 760px;
+      margin-top: 10px;
+      font-size: 0.95rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn,
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 16px;
+      text-decoration: none;
+      font-size: 0.76rem;
+      letter-spacing: 0.12em;
+      border: 1px solid var(--green);
+      transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .btn {
+      background: var(--green);
+      color: #00110b;
+      font-weight: bold;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--cyan);
+      border-color: var(--cyan);
+    }
+
+    .btn:hover,
+    .btn-secondary:hover {
+      transform: translateY(-1px);
+      background: var(--cyan);
+      color: #00110b;
+      border-color: var(--cyan);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.4fr 0.9fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .panel {
+      background: rgba(5, 8, 6, 0.45);
+      border: 1px solid var(--line);
+      padding: 22px;
+    }
+
+    .headline {
+      color: var(--green);
+      letter-spacing: 0.1em;
+      font-size: clamp(1.45rem, 4vw, 2.4rem);
+      margin-bottom: 10px;
+    }
+
+    .tagline {
+      color: var(--cyan);
+      letter-spacing: 0.14em;
+      font-size: 0.88rem;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .summary {
+      color: var(--text);
+      opacity: 0.92;
+      font-size: 0.95rem;
+    }
+
+    .meta-grid,
+    .mini-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .meta-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 20px;
+    }
+
+    .meta,
+    .mini {
+      border: 1px solid var(--line);
+      background: rgba(5, 8, 6, 0.35);
+      padding: 14px;
+    }
+
+    .meta span,
+    .mini span {
+      display: block;
+      color: var(--cyan);
+      font-size: 0.66rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .meta strong,
+    .mini strong {
+      display: block;
+      color: var(--text);
+      font-size: 0.88rem;
+    }
+
+    .section-title {
+      color: var(--green);
+      font-size: 0.76rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      margin: 24px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip {
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      color: var(--green);
+      background: rgba(5, 8, 6, 0.35);
+      font-size: 0.74rem;
+      letter-spacing: 0.1em;
+    }
+
+    .footer {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      body { padding: 12px; }
+      .frame { padding: 18px; }
+      .panel { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="frame">
+    <header class="topline">
+      <div>
+        <div class="eyebrow">Version 2D recommandée</div>
+        <h1>THE DEV SPACE TERMINAL</h1>
+        <p class="subtitle">Interface sobre, lisible et orientée recruteur. La version 3D reste optionnelle, mais la version 2D est désormais la priorité.</p>
       </div>
+      <div class="actions">
+        <a class="btn" href="/fallback/index.html">Ouvrir le portfolio 2D</a>
+        <a class="btn-secondary" href="/webxr/index.html">Version WebXR</a>
+      </div>
+    </header>
+
+    <section class="hero">
+      <article class="panel">
+        <div class="tagline">.Net Fullstack · XR Dev · Flutter Dev</div>
+        <h2 class="headline">Brandon Degbe</h2>
+        <p class="summary">
+          Développeur orienté produit avec un profil web, desktop, mobile et XR.
+          Pour une lecture simple et professionnelle, le portfolio 2D est proposé en premier.
+        </p>
+
+        <div class="meta-grid">
+          <div class="meta">
+            <span>Positionnement</span>
+            <strong>.Net Fullstack | XR Dev | Flutter Dev</strong>
+          </div>
+          <div class="meta">
+            <span>Ville</span>
+            <strong>Cotonou, Bénin</strong>
+          </div>
+          <div class="meta">
+            <span>Accès rapide</span>
+            <strong>Portfolio 2D + WebXR</strong>
+          </div>
+        </div>
+      </article>
+
+      <aside class="panel">
+        <div class="mini-grid">
+          <div class="mini">
+            <span>Projets</span>
+            <strong>Overvue, BManager, OptimaBatis, NENIA, Optivote, Burando Shoppu</strong>
+          </div>
+          <div class="mini">
+            <span>Expérience</span>
+            <strong>SODSON CORP · Youpilab</strong>
+          </div>
+          <div class="mini">
+            <span>Compétences</span>
+            <strong>C#, Blazor, Flutter, WebXR, SQL, Java</strong>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <div class="section-title">Skills Core</div>
+    <div class="chips">
+      <span class="chip">C#</span>
+      <span class="chip">Blazor Server</span>
+      <span class="chip">A-Frame / WebXR</span>
+      <span class="chip">MudBlazor</span>
+      <span class="chip">Flutter</span>
+      <span class="chip">SQL / EF Core</span>
+      <span class="chip">Git / GitHub</span>
+      <span class="chip">API Web</span>
+      <span class="chip">Java</span>
+      <span class="chip">Figma</span>
     </div>
 
-    <!-- ═══════════════════════════════════════════
-         SCÈNE A-FRAME
-    ═══════════════════════════════════════════ -->
-    <a-scene
-      id="main-scene"
-      background="color: #000000"
-      renderer="antialias: true; colorManagement: true"
-      vr-mode-ui="enabled: true"
-      loading-screen="enabled: false"
-    >
-
-      <!-- Assets (lazy loaded) -->
-      <a-assets timeout="10000">
-        <!-- Blazor Projects -->
-        <img id="img-overvue"  src="/assets/images/overvue.webp"  crossorigin="anonymous" />
-        <img id="img-bmanager" src="/assets/images/bmanager.webp" crossorigin="anonymous" />
-        <!-- Additional Projects (placeholder) -->
-        <img id="img-optimabatis"   src="/assets/images/optimabatis.webp"   crossorigin="anonymous" />
-        <img id="img-nenia"         src="/assets/images/nenia.webp"         crossorigin="anonymous" />
-        <img id="img-optivote"      src="/assets/images/optivote.webp"      crossorigin="anonymous" />
-        <img id="img-burando"       src="/assets/images/burando.webp"       crossorigin="anonymous" />
-      </a-assets>
-
-      <!-- ── Caméra ── -->
-      <a-entity id="rig" position="0 1.6 4">
-        <a-camera
-          look-controls="reverseMouseDrag: false; touchEnabled: true"
-          wasd-controls="acceleration: 20"
-          cursor="fuse: false; rayOrigin: mouse"
-        >
-          <!-- Curseur de visée (desktop) -->
-          <a-entity
-            cursor="fuse: false"
-            position="0 0 -1"
-            geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.015"
-            material="color: #00FFCC; shader: flat; opacity: 0.7"
-          ></a-entity>
-        </a-camera>
-      </a-entity>
-
-      <!-- ── Sol cyber ── -->
-      <a-entity scene-floor></a-entity>
-
-      <!-- ── Lumières ── -->
-      <a-light type="ambient"      color="#112211" intensity="1.2"></a-light>
-      <a-light type="point" color="#2E9E72" intensity="1.5" position="0 3 0" distance="15"></a-light>
-      <a-light type="point" color="#00FFCC" intensity="0.4" position="-8 2 0" distance="10"></a-light>
-      <a-light type="point" color="#00FFCC" intensity="0.4" position="8 2 0"  distance="10"></a-light>
-
-      <!-- ── Hub Central (0, 0, 0) ── -->
-      <a-entity id="hub" hub-panel position="0 0 0"></a-entity>
-
-      <!-- ── Projects Bay (aile gauche) ── -->
-      <a-entity id="projects-bay" position="-8 0 0">
-        <!-- Titre de zone -->
-        <a-text
-          value="PROJECTS BAY"
-          color="#2E9E72"
-          font="monoid"
-          align="center"
-          position="0 3.5 0"
-          scale="1.2 1.2 1.2"
-        ></a-text>
-        <!-- Overvue -->
-        <a-entity
-          project-card="
-            title: Overvue;
-            description: Gestion de projets Blazor Server.\nDéployé sur Render.;
-            image: #img-overvue;
-            url: https://overvue.onrender.com"
-          position="0 2.2 0"
-        ></a-entity>
-        <!-- BManager -->
-        <a-entity
-          project-card="
-            title: BManager;
-            description: Dashboard Blazor + MudBlazor\navec graphiques interactifs.;
-            image: #img-bmanager;
-            url: https://bmanager.onrender.com"
-          position="0 0.8 0"
-        ></a-entity>
-        <!-- OptimaBatis -->
-        <a-entity
-          project-card="
-            title: OptimaBatis;
-            description: App mobile pour réparations\net constructions. Flutter + Django.;
-            image: #img-optimabatis;
-            url: https://github.com/brandon311005"
-          position="0 -0.6 0"
-        ></a-entity>
-        <!-- NENIA -->
-        <a-entity
-          project-card="
-            title: NENIA;
-            description: Gestion boutique desktop.\nC# WinForms + PostgreSQL + API.;
-            image: #img-nenia;
-            url: https://github.com/brandon311005"
-          position="0 -2 0"
-        ></a-entity>
-        <!-- Optivote -->
-        <a-entity
-          project-card="
-            title: Optivote;
-            description: App votes présidentiels.\nFlutter + Laravel (collectif).;
-            image: #img-optivote;
-            url: https://github.com/brandon311005"
-          position="0 -3.4 0"
-        ></a-entity>
-        <!-- Burando Shoppu -->
-        <a-entity
-          project-card="
-            title: Burando Shoppu;
-            description: Gestion commandes desktop.\nJava - Dépôt Github.;
-            image: #img-burando;
-            url: https://github.com/brandon311005/Burando-Shoppu.git"
-          position="0 -4.8 0"
-        ></a-entity>
-      </a-entity>
-
-      <!-- ── Skills Core (aile droite) ── -->
-      <a-entity id="skills-core" position="8 0 0">
-        <!-- Titre de zone -->
-        <a-text
-          value="SKILLS CORE"
-          color="#2E9E72"
-          font="monoid"
-          align="center"
-          position="0 3.5 0"
-          scale="1.2 1.2 1.2"
-        ></a-text>
-        <!-- Orbs compétences principales -->
-        <a-entity skill-orb="label: C#;          color: #2E9E72" position="-1.5  2.5  0"></a-entity>
-        <a-entity skill-orb="label: Blazor;      color: #2E9E72" position=" 1.5  2.5  0"></a-entity>
-        <a-entity skill-orb="label: A-Frame/WebXR; color: #00FFCC" position=" 0    2.5 -1.5"></a-entity>
-        <a-entity skill-orb="label: MudBlazor;   color: #2E9E72" position="-1.5  1    0"></a-entity>
-        <a-entity skill-orb="label: Flutter;     color: #1A6B4A" position=" 1.5  1    0"></a-entity>
-        <a-entity skill-orb="label: React;       color: #61DAFB" position=" 0    1   -1.5"></a-entity>
-        <!-- Expertise Bars -->
-        <a-text value="Web Dev" color="#00FFCC" font="monoid" align="center" position="-1.5 -0.8 0" scale="0.8 0.8 0.8"></a-text>
-        <a-box material="color: #2E9E72" position="-1.5 -1.4 0" scale="1.5 0.2 0.1"></a-box>
-        <a-text value="75%" color="#00FFCC" font="monoid" align="center" position="-1.5 -1.8 0" scale="0.6 0.6 0.6"></a-text>
-        <a-text value="Desktop" color="#00FFCC" font="monoid" align="center" position="1.5 -0.8 0" scale="0.8 0.8 0.8"></a-text>
-        <a-box material="color: #2E9E72" position="1.5 -1.4 0" scale="1.8 0.2 0.1"></a-box>
-        <a-text value="87%" color="#00FFCC" font="monoid" align="center" position="1.5 -1.8 0" scale="0.6 0.6 0.6"></a-text>
-        <a-text value="Multimedia" color="#00FFCC" font="monoid" align="center" position="0 -2.8 0" scale="0.8 0.8 0.8"></a-text>
-        <a-box material="color: #2E9E72" position="0 -3.4 0" scale="1.6 0.2 0.1"></a-box>
-        <a-text value="80%" color="#00FFCC" font="monoid" align="center" position="0 -3.8 0" scale="0.6 0.6 0.6"></a-text>
-      </a-entity>
-
-      <!-- ── Experience Zone (aile arrière) ── -->
-      <a-entity id="experience" position="0 0 -8">
-        <!-- Titre -->
-        <a-text
-          value="EXPERIENCE & FORMATION"
-          color="#00FFCC"
-          font="monoid"
-          align="center"
-          position="0 3.5 0"
-          scale="1.2 1.2 1.2"
-        ></a-text>
-        <!-- Current: .Net Fullstack SODSON CORP -->
-        <a-text value=".Net Fullstack Developer" color="#2E9E72" font="monoid" align="center" position="0 2.5 0" scale="0.9 0.9 0.9"></a-text>
-        <a-text value="SODSON CORP" color="#00FFCC" font="monoid" align="center" position="0 2 0" scale="0.7 0.7 0.7"></a-text>
-        <a-text value="Septembre 2025 - Aujourd'hui" color="#1A6B4A" font="monoid" align="center" position="0 1.4 0" scale="0.6 0.6 0.6"></a-text>
-        <!-- Recent: Web Fullstack Youpilab -->
-        <a-text value="Web Fullstack Developer" color="#2E9E72" font="monoid" align="center" position="0 0.5 0" scale="0.9 0.9 0.9"></a-text>
-        <a-text value="Youpilab" color="#00FFCC" font="monoid" align="center" position="0 0 0" scale="0.7 0.7 0.7"></a-text>
-        <a-text value="15 Mai - 15 Août 2025" color="#1A6B4A" font="monoid" align="center" position="0 -0.6 0" scale="0.6 0.6 0.6"></a-text>
-        <!-- Education -->
-        <a-text value="Licence 3" color="#2E9E72" font="monoid" align="center" position="0 -1.8 0" scale="0.9 0.9 0.9"></a-text>
-        <a-text value="2022 - Aujourd'hui" color="#1A6B4A" font="monoid" align="center" position="0 -2.4 0" scale="0.6 0.6 0.6"></a-text>
-      </a-entity>
-
-      <!-- ── Contact Zone (aile avant) ── -->
-      <a-entity id="contact" position="0 0 8">
-        <!-- Titre -->
-        <a-text
-          value="CONTACT"
-          color="#00FFCC"
-          font="monoid"
-          align="center"
-          position="0 3 0"
-          scale="1.2 1.2 1.2"
-        ></a-text>
-        <!-- Email -->
-        <a-text value="📧 brandondgbe95@gmail.com" color="#2E9E72" font="monoid" align="center" position="0 2 0" scale="0.7 0.7 0.7"></a-text>
-        <!-- Phone -->
-        <a-text value="📱 +229 52323535 / 58360861" color="#2E9E72" font="monoid" align="center" position="0 1.2 0" scale="0.7 0.7 0.7"></a-text>
-        <!-- GitHub -->
-        <a-text value="🐙 github.com/brandon311005" color="#2E9E72" font="monoid" align="center" position="0 0.4 0" scale="0.7 0.7 0.7"></a-text>
-        <!-- Languages -->
-        <a-text value="LANGUES" color="#00FFCC" font="monoid" align="center" position="0 -0.8 0" scale="0.9 0.9 0.9"></a-text>
-        <a-text value="🇫🇷 Français (Natif)" color="#2E9E72" font="monoid" align="center" position="0 -1.6 0" scale="0.6 0.6 0.6"></a-text>
-        <a-text value="🇬🇧 Anglais (Basique)" color="#2E9E72" font="monoid" align="center" position="0 -2.2 0" scale="0.6 0.6 0.6"></a-text>
-      </a-entity>
-
-      <!-- ── Skybox (étoilée) ── -->
-      <a-sky color="#020a05"></a-sky>
-
-    </a-scene>
-
-    <script type="module" src="/src/main.js"></script>
-  </body>
+    <footer class="footer">
+      <p>© 2026 Brandon Degbe</p>
+      <p>Le 2D est la version principale.</p>
+    </footer>
+  </main>
+</body>
 </html>
