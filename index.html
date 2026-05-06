@@ -39,8 +39,14 @@
 
       <!-- Assets (lazy loaded) -->
       <a-assets timeout="10000">
+        <!-- Blazor Projects -->
         <img id="img-overvue"  src="/assets/images/overvue.webp"  crossorigin="anonymous" />
         <img id="img-bmanager" src="/assets/images/bmanager.webp" crossorigin="anonymous" />
+        <!-- Additional Projects (placeholder) -->
+        <img id="img-optimabatis"   src="/assets/images/optimabatis.webp"   crossorigin="anonymous" />
+        <img id="img-nenia"         src="/assets/images/nenia.webp"         crossorigin="anonymous" />
+        <img id="img-optivote"      src="/assets/images/optivote.webp"      crossorigin="anonymous" />
+        <img id="img-burando"       src="/assets/images/burando.webp"       crossorigin="anonymous" />
       </a-assets>
 
       <!-- ── Caméra ── -->
@@ -80,7 +86,7 @@
           color="#2E9E72"
           font="monoid"
           align="center"
-          position="0 3.2 0"
+          position="0 3.5 0"
           scale="1.2 1.2 1.2"
         ></a-text>
         <!-- Overvue -->
@@ -90,7 +96,7 @@
             description: Gestion de projets Blazor Server.\nDéployé sur Render.;
             image: #img-overvue;
             url: https://overvue.onrender.com"
-          position="0 1.2 0"
+          position="0 2.2 0"
         ></a-entity>
         <!-- BManager -->
         <a-entity
@@ -99,7 +105,43 @@
             description: Dashboard Blazor + MudBlazor\navec graphiques interactifs.;
             image: #img-bmanager;
             url: https://bmanager.onrender.com"
-          position="0 -0.8 0"
+          position="0 0.8 0"
+        ></a-entity>
+        <!-- OptimaBatis -->
+        <a-entity
+          project-card="
+            title: OptimaBatis;
+            description: App mobile pour réparations\net constructions. Flutter + Django.;
+            image: #img-optimabatis;
+            url: https://github.com/brandon311005"
+          position="0 -0.6 0"
+        ></a-entity>
+        <!-- NENIA -->
+        <a-entity
+          project-card="
+            title: NENIA;
+            description: Gestion boutique desktop.\nC# WinForms + PostgreSQL + API.;
+            image: #img-nenia;
+            url: https://github.com/brandon311005"
+          position="0 -2 0"
+        ></a-entity>
+        <!-- Optivote -->
+        <a-entity
+          project-card="
+            title: Optivote;
+            description: App votes présidentiels.\nFlutter + Laravel (collectif).;
+            image: #img-optivote;
+            url: https://github.com/brandon311005"
+          position="0 -3.4 0"
+        ></a-entity>
+        <!-- Burando Shoppu -->
+        <a-entity
+          project-card="
+            title: Burando Shoppu;
+            description: Gestion commandes desktop.\nJava - Dépôt Github.;
+            image: #img-burando;
+            url: https://github.com/brandon311005/Burando-Shoppu.git"
+          position="0 -4.8 0"
         ></a-entity>
       </a-entity>
 
@@ -111,16 +153,73 @@
           color="#2E9E72"
           font="monoid"
           align="center"
-          position="0 3.2 0"
+          position="0 3.5 0"
           scale="1.2 1.2 1.2"
         ></a-text>
-        <!-- Orbs compétences -->
-        <a-entity skill-orb="label: C#;          color: #2E9E72" position="-1.5  1.5  0"></a-entity>
-        <a-entity skill-orb="label: Blazor;      color: #2E9E72" position=" 1.5  1.5  0"></a-entity>
-        <a-entity skill-orb="label: A-Frame/WebXR; color: #00FFCC" position=" 0    1.5 -1.5"></a-entity>
-        <a-entity skill-orb="label: MudBlazor;   color: #2E9E72" position="-1.5  0    0"></a-entity>
-        <a-entity skill-orb="label: RFID/POS;    color: #2E9E72" position=" 1.5  0    0"></a-entity>
-        <a-entity skill-orb="label: Flutter;     color: #1A6B4A" position=" 0    0   -1.5"></a-entity>
+        <!-- Orbs compétences principales -->
+        <a-entity skill-orb="label: C#;          color: #2E9E72" position="-1.5  2.5  0"></a-entity>
+        <a-entity skill-orb="label: Blazor;      color: #2E9E72" position=" 1.5  2.5  0"></a-entity>
+        <a-entity skill-orb="label: A-Frame/WebXR; color: #00FFCC" position=" 0    2.5 -1.5"></a-entity>
+        <a-entity skill-orb="label: MudBlazor;   color: #2E9E72" position="-1.5  1    0"></a-entity>
+        <a-entity skill-orb="label: Flutter;     color: #1A6B4A" position=" 1.5  1    0"></a-entity>
+        <a-entity skill-orb="label: React;       color: #61DAFB" position=" 0    1   -1.5"></a-entity>
+        <!-- Expertise Bars -->
+        <a-text value="Web Dev" color="#00FFCC" font="monoid" align="center" position="-1.5 -0.8 0" scale="0.8 0.8 0.8"></a-text>
+        <a-box material="color: #2E9E72" position="-1.5 -1.4 0" scale="1.5 0.2 0.1"></a-box>
+        <a-text value="75%" color="#00FFCC" font="monoid" align="center" position="-1.5 -1.8 0" scale="0.6 0.6 0.6"></a-text>
+        <a-text value="Desktop" color="#00FFCC" font="monoid" align="center" position="1.5 -0.8 0" scale="0.8 0.8 0.8"></a-text>
+        <a-box material="color: #2E9E72" position="1.5 -1.4 0" scale="1.8 0.2 0.1"></a-box>
+        <a-text value="87%" color="#00FFCC" font="monoid" align="center" position="1.5 -1.8 0" scale="0.6 0.6 0.6"></a-text>
+        <a-text value="Multimedia" color="#00FFCC" font="monoid" align="center" position="0 -2.8 0" scale="0.8 0.8 0.8"></a-text>
+        <a-box material="color: #2E9E72" position="0 -3.4 0" scale="1.6 0.2 0.1"></a-box>
+        <a-text value="80%" color="#00FFCC" font="monoid" align="center" position="0 -3.8 0" scale="0.6 0.6 0.6"></a-text>
+      </a-entity>
+
+      <!-- ── Experience Zone (aile arrière) ── -->
+      <a-entity id="experience" position="0 0 -8">
+        <!-- Titre -->
+        <a-text
+          value="EXPERIENCE & FORMATION"
+          color="#00FFCC"
+          font="monoid"
+          align="center"
+          position="0 3.5 0"
+          scale="1.2 1.2 1.2"
+        ></a-text>
+        <!-- Current: .Net Fullstack SODSON CORP -->
+        <a-text value=".Net Fullstack Developer" color="#2E9E72" font="monoid" align="center" position="0 2.5 0" scale="0.9 0.9 0.9"></a-text>
+        <a-text value="SODSON CORP" color="#00FFCC" font="monoid" align="center" position="0 2 0" scale="0.7 0.7 0.7"></a-text>
+        <a-text value="Septembre 2025 - Aujourd'hui" color="#1A6B4A" font="monoid" align="center" position="0 1.4 0" scale="0.6 0.6 0.6"></a-text>
+        <!-- Recent: Web Fullstack Youpilab -->
+        <a-text value="Web Fullstack Developer" color="#2E9E72" font="monoid" align="center" position="0 0.5 0" scale="0.9 0.9 0.9"></a-text>
+        <a-text value="Youpilab" color="#00FFCC" font="monoid" align="center" position="0 0 0" scale="0.7 0.7 0.7"></a-text>
+        <a-text value="15 Mai - 15 Août 2025" color="#1A6B4A" font="monoid" align="center" position="0 -0.6 0" scale="0.6 0.6 0.6"></a-text>
+        <!-- Education -->
+        <a-text value="Licence 3" color="#2E9E72" font="monoid" align="center" position="0 -1.8 0" scale="0.9 0.9 0.9"></a-text>
+        <a-text value="2022 - Aujourd'hui" color="#1A6B4A" font="monoid" align="center" position="0 -2.4 0" scale="0.6 0.6 0.6"></a-text>
+      </a-entity>
+
+      <!-- ── Contact Zone (aile avant) ── -->
+      <a-entity id="contact" position="0 0 8">
+        <!-- Titre -->
+        <a-text
+          value="CONTACT"
+          color="#00FFCC"
+          font="monoid"
+          align="center"
+          position="0 3 0"
+          scale="1.2 1.2 1.2"
+        ></a-text>
+        <!-- Email -->
+        <a-text value="📧 brandondgbe95@gmail.com" color="#2E9E72" font="monoid" align="center" position="0 2 0" scale="0.7 0.7 0.7"></a-text>
+        <!-- Phone -->
+        <a-text value="📱 +229 52323535 / 58360861" color="#2E9E72" font="monoid" align="center" position="0 1.2 0" scale="0.7 0.7 0.7"></a-text>
+        <!-- GitHub -->
+        <a-text value="🐙 github.com/brandon311005" color="#2E9E72" font="monoid" align="center" position="0 0.4 0" scale="0.7 0.7 0.7"></a-text>
+        <!-- Languages -->
+        <a-text value="LANGUES" color="#00FFCC" font="monoid" align="center" position="0 -0.8 0" scale="0.9 0.9 0.9"></a-text>
+        <a-text value="🇫🇷 Français (Natif)" color="#2E9E72" font="monoid" align="center" position="0 -1.6 0" scale="0.6 0.6 0.6"></a-text>
+        <a-text value="🇬🇧 Anglais (Basique)" color="#2E9E72" font="monoid" align="center" position="0 -2.2 0" scale="0.6 0.6 0.6"></a-text>
       </a-entity>
 
       <!-- ── Skybox (étoilée) ── -->

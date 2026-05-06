@@ -19,7 +19,7 @@ AFRAME.registerComponent('hub-panel', {
 
     // ── Tagline ──
     const tagline = document.createElement('a-text');
-    tagline.setAttribute('value', '.NET Developer  →  XR Pioneer');
+    tagline.setAttribute('value', '.Net Fullstack | XR Dev | Flutter Dev');
     tagline.setAttribute('color', '#6aab89');
     tagline.setAttribute('align', 'center');
     tagline.setAttribute('width', '4');
