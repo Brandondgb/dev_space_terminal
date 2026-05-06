@@ -14,8 +14,8 @@ AFRAME.registerComponent('project-card', {
   init() {
     const el   = this.el;
     const data = this.data;
-    const W = 2.0;
-    const H = 1.3;
+    const W = 1.85;
+    const H = 1.18;
 
     // ── Fond de la carte ──
     const bg = document.createElement('a-plane');
@@ -38,9 +38,9 @@ AFRAME.registerComponent('project-card', {
     if (data.image) {
       const img = document.createElement('a-image');
       img.setAttribute('src', data.image);
-      img.setAttribute('width', '1.1');
-      img.setAttribute('height', '0.65');
-      img.setAttribute('position', `${W / 2 - 0.65} 0.15 0.01`);
+      img.setAttribute('width', '0.98');
+      img.setAttribute('height', '0.58');
+      img.setAttribute('position', `${W / 2 - 0.58} 0.12 0.01`);
       el.appendChild(img);
     }
 
@@ -49,8 +49,8 @@ AFRAME.registerComponent('project-card', {
     title.setAttribute('value', data.title.toUpperCase());
     title.setAttribute('color', '#2E9E72');
     title.setAttribute('align', 'left');
-    title.setAttribute('width', '1.4');
-    title.setAttribute('position', `${-W / 2 + 0.15} ${H / 2 - 0.2} 0.02`);
+    title.setAttribute('width', '1.2');
+    title.setAttribute('position', `${-W / 2 + 0.12} ${H / 2 - 0.17} 0.02`);
     el.appendChild(title);
 
     // ── Description ──
@@ -58,17 +58,17 @@ AFRAME.registerComponent('project-card', {
     desc.setAttribute('value', data.description);
     desc.setAttribute('color', '#E0FFE8');
     desc.setAttribute('align', 'left');
-    desc.setAttribute('width', '1.1');
-    desc.setAttribute('position', `${-W / 2 + 0.15} 0.05 0.02`);
+    desc.setAttribute('width', '1.0');
+    desc.setAttribute('position', `${-W / 2 + 0.12} 0.02 0.02`);
     el.appendChild(desc);
 
     // ── Bouton « Voir Live » ──
     const btnEl = document.createElement('a-entity');
-    btnEl.setAttribute('position', `${-W / 2 + 0.55} ${-H / 2 + 0.2} 0.02`);
+    btnEl.setAttribute('position', `${-W / 2 + 0.52} ${-H / 2 + 0.17} 0.02`);
 
     const btnBg = document.createElement('a-plane');
-    btnBg.setAttribute('width', '0.8');
-    btnBg.setAttribute('height', '0.22');
+    btnBg.setAttribute('width', '0.72');
+    btnBg.setAttribute('height', '0.2');
     btnBg.setAttribute('color', '#2E9E72');
     btnBg.setAttribute('material', 'opacity: 0.9; transparent: true');
     btnEl.appendChild(btnBg);
@@ -77,7 +77,7 @@ AFRAME.registerComponent('project-card', {
     btnText.setAttribute('value', '→ VOIR LIVE');
     btnText.setAttribute('color', '#000000');
     btnText.setAttribute('align', 'center');
-    btnText.setAttribute('width', '1.2');
+    btnText.setAttribute('width', '1.0');
     btnText.setAttribute('position', '0 0 0.01');
     btnEl.appendChild(btnText);
 

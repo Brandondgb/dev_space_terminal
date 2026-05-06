@@ -38,7 +38,7 @@ AFRAME.registerComponent('hub-panel', {
     // ── Vision XR ──
     const vision = document.createElement('a-text');
     vision.setAttribute('value',
-      'Futur expert XR & fondateur\nd\'une entreprise XR en Afrique de l\'Ouest.'
+      'Développement d\'applications web, desktop, mobile\net immersives avec une approche produit.'
     );
     vision.setAttribute('color', '#E0FFE8');
     vision.setAttribute('align', 'center');
