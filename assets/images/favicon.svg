@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="The Dev Space Terminal icon">
+  <rect width="64" height="64" rx="12" fill="#050806"/>
+  <rect x="8" y="8" width="48" height="48" rx="10" fill="none" stroke="#00FFCC" stroke-width="2"/>
+  <path d="M16 23h32M16 32h20M16 41h26" stroke="#2E9E72" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="46" cy="41" r="4" fill="#00FFCC"/>
+</svg>

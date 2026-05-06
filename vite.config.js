@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   base: '/',
-  
+
   build: {
     outDir: 'dist',
     assetsInlineLimit: 0,
@@ -14,6 +14,11 @@ export default defineConfig({
       },
     },
     rollupOptions: {
+      input: {
+        main: 'index.html',
+        webxr: 'webxr/index.html',
+        fallback: 'fallback/index.html',
+      },
       output: {
         manualChunks: {
           'aframe': ['aframe'],
@@ -29,8 +34,6 @@ export default defineConfig({
     sourcemap: true,
   },
 
-  publicDir: 'fallback',
-  
   css: {
     preprocessorOptions: {
       scss: {
