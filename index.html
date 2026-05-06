@@ -1,162 +1,133 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="The Dev Space Terminal — portfolio WebXR immersif de Brandon." />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="The Dev Space Terminal — Portfolio WebXR de Brandon Degbe, développeur .NET & XR." />
     <title>The Dev Space Terminal</title>
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <style>
-      :root {
-        color-scheme: dark;
-        --bg: #050816;
-        --panel: rgba(10, 16, 35, 0.78);
-        --line: rgba(120, 165, 255, 0.24);
-        --text: #e8f0ff;
-        --muted: #9eb0d1;
-        --accent: #64d2ff;
-      }
-
-      html, body {
-        margin: 0;
-        width: 100%;
-        height: 100%;
-        background: var(--bg);
-        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        color: var(--text);
-        overflow: hidden;
-      }
-
-      .overlay {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        display: grid;
-        grid-template-rows: auto 1fr auto;
-        padding: 1.25rem;
-        gap: 1rem;
-        z-index: 10;
-      }
-
-      .panel {
-        pointer-events: auto;
-        max-width: 42rem;
-        background: var(--panel);
-        border: 1px solid var(--line);
-        backdrop-filter: blur(14px);
-        border-radius: 1.25rem;
-        box-shadow: 0 20px 80px rgba(0, 0, 0, 0.35);
-      }
-
-      .hero {
-        padding: 1.2rem 1.3rem;
-      }
-
-      .eyebrow {
-        text-transform: uppercase;
-        letter-spacing: 0.18em;
-        font-size: 0.72rem;
-        color: var(--accent);
-        margin: 0 0 0.35rem;
-      }
-
-      h1 {
-        margin: 0;
-        font-size: clamp(1.8rem, 4vw, 3.2rem);
-        line-height: 1;
-      }
-
-      .subtitle {
-        margin: 0.75rem 0 0;
-        color: var(--muted);
-        max-width: 60ch;
-      }
-
-      .actions {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        margin-top: 1rem;
-      }
-
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.8rem 1rem;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        text-decoration: none;
-        color: var(--text);
-        background: rgba(255, 255, 255, 0.04);
-      }
-
-      .btn.primary {
-        background: linear-gradient(135deg, rgba(100, 210, 255, 0.95), rgba(119, 110, 255, 0.95));
-        color: #02111f;
-        font-weight: 700;
-      }
-
-      .hint {
-        justify-self: start;
-        align-self: end;
-        padding: 0.8rem 1rem;
-        font-size: 0.9rem;
-        color: var(--muted);
-      }
-
-      a-scene {
-        position: fixed;
-        inset: 0;
-      }
-    </style>
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />
+    <link rel="stylesheet" href="/src/styles/main.css" />
   </head>
   <body>
-    <div class="overlay">
-      <header class="panel hero">
-        <p class="eyebrow">WebXR portfolio</p>
-        <h1>The Dev Space Terminal</h1>
-        <p class="subtitle">
-          Base immersive pour présenter Overvue, BManager et la future Skills Core en A-Frame.
-        </p>
-        <div class="actions">
-          <a class="btn primary" href="#scene">Entrer dans le terminal</a>
-          <a class="btn" href="fallback/index.html">Ouvrir la version 2D</a>
+
+    <!-- ═══════════════════════════════════════════
+         LOADER / SPLASH SCREEN
+         Affiché pendant l'init A-Frame / WebXR.
+         Retiré automatiquement via main.js
+    ═══════════════════════════════════════════ -->
+    <div id="loader">
+      <div class="loader-inner">
+        <p class="loader-title">THE DEV SPACE TERMINAL</p>
+        <p class="loader-sub">Initialisation WebXR...</p>
+        <div class="loader-bar-wrap">
+          <div class="loader-bar" id="loader-bar"></div>
         </div>
-      </header>
-
-      <div></div>
-
-      <div class="panel hint">
-        Navigation prévue : souris, tactile, clavier, puis fallback 2D si WebXR n’est pas disponible.
+        <p class="loader-hint" id="loader-hint">Chargement de la scène</p>
       </div>
     </div>
 
+    <!-- ═══════════════════════════════════════════
+         SCÈNE A-FRAME
+    ═══════════════════════════════════════════ -->
     <a-scene
-      id="scene"
-      renderer="colorManagement: true; physicallyCorrectLights: true"
-      background="color: #050816"
+      id="main-scene"
+      background="color: #000000"
+      renderer="antialias: true; colorManagement: true"
       vr-mode-ui="enabled: true"
-      embedded
+      loading-screen="enabled: false"
     >
-      <a-assets>
-        <img id="placeholder-screenshot" src="assets/images/.gitkeep" alt="Placeholder" />
+
+      <!-- Assets (lazy loaded) -->
+      <a-assets timeout="10000">
+        <img id="img-overvue"  src="/assets/images/overvue.webp"  crossorigin="anonymous" />
+        <img id="img-bmanager" src="/assets/images/bmanager.webp" crossorigin="anonymous" />
       </a-assets>
 
-      <a-entity position="0 1.6 4">
-        <a-camera wasd-controls-enabled="true" look-controls="pointerLockEnabled: true"></a-camera>
+      <!-- ── Caméra ── -->
+      <a-entity id="rig" position="0 1.6 4">
+        <a-camera
+          look-controls="reverseMouseDrag: false; touchEnabled: true"
+          wasd-controls="acceleration: 20"
+          cursor="fuse: false; rayOrigin: mouse"
+        >
+          <!-- Curseur de visée (desktop) -->
+          <a-entity
+            cursor="fuse: false"
+            position="0 0 -1"
+            geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.015"
+            material="color: #00FFCC; shader: flat; opacity: 0.7"
+          ></a-entity>
+        </a-camera>
       </a-entity>
 
-      <a-sky color="#050816"></a-sky>
-      <a-entity light="type: ambient; intensity: 0.9; color: #a8c8ff"></a-entity>
-      <a-entity light="type: directional; intensity: 1.1; color: #7bdcff" position="-1 2 1"></a-entity>
+      <!-- ── Sol cyber ── -->
+      <a-entity scene-floor></a-entity>
 
-      <a-entity geometry="primitive: plane; width: 8; height: 4" material="color: #0a1023; opacity: 0.9; transparent: true" position="0 1.6 -3"></a-entity>
-      <a-text value="Projects Bay" align="center" color="#64d2ff" position="0 2.6 -2.95"></a-text>
-      <a-box position="-1.4 1.3 -2.8" depth="0.2" height="1" width="1.2" color="#1f4fff"></a-box>
-      <a-box position="1.4 1.3 -2.8" depth="0.2" height="1" width="1.2" color="#4fe3c1"></a-box>
-      <a-text value="Overvue" align="center" color="#e8f0ff" position="-1.4 0.55 -2.7"></a-text>
-      <a-text value="BManager" align="center" color="#e8f0ff" position="1.4 0.55 -2.7"></a-text>
+      <!-- ── Lumières ── -->
+      <a-light type="ambient"      color="#112211" intensity="1.2"></a-light>
+      <a-light type="point" color="#2E9E72" intensity="1.5" position="0 3 0" distance="15"></a-light>
+      <a-light type="point" color="#00FFCC" intensity="0.4" position="-8 2 0" distance="10"></a-light>
+      <a-light type="point" color="#00FFCC" intensity="0.4" position="8 2 0"  distance="10"></a-light>
+
+      <!-- ── Hub Central (0, 0, 0) ── -->
+      <a-entity id="hub" hub-panel position="0 0 0"></a-entity>
+
+      <!-- ── Projects Bay (aile gauche) ── -->
+      <a-entity id="projects-bay" position="-8 0 0">
+        <!-- Titre de zone -->
+        <a-text
+          value="PROJECTS BAY"
+          color="#2E9E72"
+          font="monoid"
+          align="center"
+          position="0 3.2 0"
+          scale="1.2 1.2 1.2"
+        ></a-text>
+        <!-- Overvue -->
+        <a-entity
+          project-card="
+            title: Overvue;
+            description: Gestion de projets Blazor Server.\nDéployé sur Render.;
+            image: #img-overvue;
+            url: https://overvue.onrender.com"
+          position="0 1.2 0"
+        ></a-entity>
+        <!-- BManager -->
+        <a-entity
+          project-card="
+            title: BManager;
+            description: Dashboard Blazor + MudBlazor\navec graphiques interactifs.;
+            image: #img-bmanager;
+            url: https://bmanager.onrender.com"
+          position="0 -0.8 0"
+        ></a-entity>
+      </a-entity>
+
+      <!-- ── Skills Core (aile droite) ── -->
+      <a-entity id="skills-core" position="8 0 0">
+        <!-- Titre de zone -->
+        <a-text
+          value="SKILLS CORE"
+          color="#2E9E72"
+          font="monoid"
+          align="center"
+          position="0 3.2 0"
+          scale="1.2 1.2 1.2"
+        ></a-text>
+        <!-- Orbs compétences -->
+        <a-entity skill-orb="label: C#;          color: #2E9E72" position="-1.5  1.5  0"></a-entity>
+        <a-entity skill-orb="label: Blazor;      color: #2E9E72" position=" 1.5  1.5  0"></a-entity>
+        <a-entity skill-orb="label: A-Frame/WebXR; color: #00FFCC" position=" 0    1.5 -1.5"></a-entity>
+        <a-entity skill-orb="label: MudBlazor;   color: #2E9E72" position="-1.5  0    0"></a-entity>
+        <a-entity skill-orb="label: RFID/POS;    color: #2E9E72" position=" 1.5  0    0"></a-entity>
+        <a-entity skill-orb="label: Flutter;     color: #1A6B4A" position=" 0    0   -1.5"></a-entity>
+      </a-entity>
+
+      <!-- ── Skybox (étoilée) ── -->
+      <a-sky color="#020a05"></a-sky>
+
     </a-scene>
+
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>

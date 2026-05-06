@@ -1,24 +1,74 @@
 # The Dev Space Terminal
 
-Portfolio WebXR immersif en A-Frame pour présenter les projets Overvue et BManager, avec une version fallback 2D.
+Portfolio WebXR immersif — **[brandondegbe.me](https://brandondegbe.me)**
+
+> Cyber terminal en 3D : Hub Central · Projects Bay · Skills Core
+
+---
+
+## Stack
+
+| Couche | Technologie |
+|--------|-------------|
+| Build | Vite 5+ |
+| Framework 3D | A-Frame 1.6+ |
+| Hébergement | GitHub Pages |
+| Domaine | brandondegbe.me |
+| Fallback | HTML5 / CSS3 vanilla |
+
+## Lancer en local
+
+```bash
+npm install
+npm run dev
+# → http://localhost:3000
+```
+
+## Build & déploiement
+
+```bash
+npm run build       # génère dist/
+# push sur main → GitHub Actions déploie automatiquement
+```
 
 ## Structure
 
-- `index.html` : version principale WebXR
-- `fallback/index.html` : version 2D simple
-- `assets/images/` : captures optimisées
-- `assets/models/` : modèles 3D futurs
-- `src/components/` : composants JS personnalisés à venir
+```
+.
+├── assets/
+│   ├── images/          # Screenshots projets (WebP)
+│   └── models/          # Modèles GLTF/GLB (si utilisés)
+├── fallback/
+│   └── index.html       # Version 2D sans WebXR
+├── src/
+│   ├── components/      # Composants A-Frame custom
+│   │   ├── project-card.js
+│   │   ├── skill-orb.js
+│   │   ├── hub-panel.js
+│   │   ├── scene-floor.js
+│   │   └── nav-teleport.js
+│   ├── main.js          # Point d'entrée
+│   └── styles/main.css  # Loader + UI
+├── index.html           # Scène WebXR principale
+├── vite.config.js
+└── .github/workflows/deploy.yml
+```
 
-## Démarrage
+## Contrôles
 
-La version actuelle fonctionne avec le CDN A-Frame dans `index.html`.
-Ouvrir simplement `index.html` dans un navigateur moderne, ou servir le dossier via un serveur local.
+| Action | Desktop | Mobile |
+|--------|---------|--------|
+| Déplacer | WASD / Flèches | Drag 2 doigts |
+| Regarder | Souris (drag) | Drag 1 doigt |
+| Interagir | Clic | Tap |
+| Mode VR | Bouton VR (bas droite) | — |
 
-## Étapes suivantes
+## Zones de la scène
 
-- Ajouter les screenshots de projets dans `assets/images/`
-- Créer les composants A-Frame dans `src/components/`
-- Construire la Projects Bay interactive
-- Développer la Skills Core
-- Remplacer les placeholders par les vrais assets
+- **Hub Central** `(0, 0, 0)` — titre, tagline, navigation
+- **Projects Bay** `(-8, 0, 0)` — Overvue & BManager
+- **Skills Core** `(+8, 0, 0)` — 6 orbs compétences
+
+## Auteur
+
+**Brandon Degbe** — .NET Developer & XR Enthusiast · Cotonou, Bénin

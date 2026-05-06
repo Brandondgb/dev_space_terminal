@@ -1,142 +1,295 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Version 2D simple du Dev Space Terminal." />
-    <title>The Dev Space Terminal — Fallback 2D</title>
-    <style>
-      :root {
-        color-scheme: dark;
-        --bg: #050816;
-        --panel: #0a1023;
-        --line: rgba(120, 165, 255, 0.2);
-        --text: #e8f0ff;
-        --muted: #9eb0d1;
-        --accent: #64d2ff;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="The Dev Space Terminal — Portfolio de Brandon Degbe (version 2D)" />
+  <title>The Dev Space Terminal — Version 2D</title>
+  <style>
+    :root {
+      --c-bg:      #000000;
+      --c-surface: #0d1f14;
+      --c-green:   #2E9E72;
+      --c-cyan:    #00FFCC;
+      --c-text:    #E0FFE8;
+      --c-muted:   #6aab89;
+      --c-border:  #1a4a30;
+      --font:      'Courier New', Courier, monospace;
+    }
 
-      * { box-sizing: border-box; }
-      html, body {
-        margin: 0;
-        min-height: 100%;
-        background: radial-gradient(circle at top, #0d1533 0%, var(--bg) 55%);
-        color: var(--text);
-        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      body {
-        padding: 1.25rem;
-      }
+    body {
+      background: var(--c-bg);
+      color: var(--c-text);
+      font-family: var(--font);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
 
-      .wrap {
-        max-width: 1100px;
-        margin: 0 auto;
-      }
+    /* ── HEADER ── */
+    header {
+      border-bottom: 1px solid var(--c-border);
+      padding: 2rem clamp(1rem, 5vw, 4rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
 
-      .hero, .card {
-        background: rgba(10, 16, 35, 0.9);
-        border: 1px solid var(--line);
-        border-radius: 1.25rem;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
-      }
+    .site-title {
+      font-size: clamp(1rem, 3vw, 1.4rem);
+      color: var(--c-green);
+      letter-spacing: 0.15em;
+      font-weight: bold;
+    }
 
-      .hero {
-        padding: 1.25rem;
-        margin-bottom: 1rem;
-      }
+    .webxr-link {
+      font-size: 0.75rem;
+      color: var(--c-cyan);
+      text-decoration: none;
+      border: 1px solid var(--c-cyan);
+      padding: 6px 14px;
+      letter-spacing: 0.1em;
+      transition: background 0.2s, color 0.2s;
+    }
 
-      .eyebrow {
-        margin: 0 0 0.35rem;
-        text-transform: uppercase;
-        letter-spacing: 0.18em;
-        color: var(--accent);
-        font-size: 0.75rem;
-      }
+    .webxr-link:hover {
+      background: var(--c-cyan);
+      color: var(--c-bg);
+    }
 
-      h1 { margin: 0; font-size: clamp(1.9rem, 5vw, 3rem); }
-      p { color: var(--muted); line-height: 1.6; }
+    /* ── MAIN ── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem clamp(1rem, 5vw, 3rem);
+    }
 
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 1rem;
-      }
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 3rem 0 4rem;
+      border-bottom: 1px solid var(--c-border);
+      margin-bottom: 4rem;
+    }
 
-      .card {
-        padding: 1rem;
-      }
+    .hero h1 {
+      font-size: clamp(1.5rem, 5vw, 2.8rem);
+      color: var(--c-green);
+      letter-spacing: 0.15em;
+      margin-bottom: 0.75rem;
+    }
 
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.35rem 0.6rem;
-        border-radius: 999px;
-        background: rgba(100, 210, 255, 0.12);
-        color: var(--accent);
-        border: 1px solid var(--line);
-        font-size: 0.85rem;
-      }
+    .hero .tagline {
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      color: var(--c-muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 1.5rem;
+    }
 
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
+    .hero .vision {
+      max-width: 560px;
+      margin: 0 auto;
+      font-size: 0.85rem;
+      color: var(--c-text);
+      opacity: 0.8;
+    }
 
-      .actions {
-        margin-top: 1rem;
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-      }
+    /* ── SECTION TITLES ── */
+    .section-title {
+      font-size: 0.7rem;
+      color: var(--c-green);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
 
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.8rem 1rem;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.04);
-      }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--c-border);
+    }
 
-      .btn.primary {
-        background: linear-gradient(135deg, rgba(100, 210, 255, 0.95), rgba(119, 110, 255, 0.95));
-        color: #02111f;
-        font-weight: 700;
-      }
-    </style>
-  </head>
-  <body>
-    <main class="wrap">
-      <section class="hero">
-        <p class="eyebrow">Fallback 2D</p>
-        <h1>The Dev Space Terminal</h1>
-        <p>
-          Version simple et responsive pour garantir l’accès au portfolio même sans WebXR/WebGL.
-        </p>
-        <div class="actions">
-          <a class="btn primary" href="../index.html">Retour à la version WebXR</a>
-        </div>
-      </section>
+    /* ── PROJECTS GRID ── */
+    .projects {
+      margin-bottom: 5rem;
+    }
 
-      <section class="grid" aria-label="Présentation rapide">
-        <article class="card">
-          <span class="badge">Projects Bay</span>
-          <h2>Overvue</h2>
-          <p>Gestion de projets Blazor Server déployée sur Render.</p>
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .project-card {
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      border-left: 3px solid var(--c-green);
+      padding: 1.5rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .project-card:hover {
+      border-color: var(--c-cyan);
+      border-left-color: var(--c-cyan);
+      transform: translateY(-2px);
+    }
+
+    .project-card h3 {
+      color: var(--c-green);
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+
+    .project-card p {
+      font-size: 0.8rem;
+      color: var(--c-muted);
+      margin-bottom: 1.25rem;
+      line-height: 1.7;
+    }
+
+    .project-card .screenshot {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      background: #0a1a0f;
+      border: 1px solid var(--c-border);
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .btn-live {
+      display: inline-block;
+      font-size: 0.75rem;
+      color: var(--c-bg);
+      background: var(--c-green);
+      padding: 6px 16px;
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: background 0.2s;
+      font-family: var(--font);
+    }
+
+    .btn-live:hover {
+      background: var(--c-cyan);
+    }
+
+    /* ── SKILLS GRID ── */
+    .skills {
+      margin-bottom: 5rem;
+    }
+
+    .skills-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .skill-tag {
+      font-size: 0.75rem;
+      color: var(--c-green);
+      border: 1px solid var(--c-border);
+      padding: 6px 14px;
+      letter-spacing: 0.1em;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .skill-tag:hover {
+      border-color: var(--c-cyan);
+      color: var(--c-cyan);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--c-border);
+      padding: 1.5rem clamp(1rem, 5vw, 4rem);
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--c-muted);
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span class="site-title">THE DEV SPACE TERMINAL</span>
+    <a class="webxr-link" href="/">↗ Version WebXR</a>
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <h1>THE DEV SPACE TERMINAL</h1>
+      <p class="tagline">.NET Developer → XR Pioneer · Cotonou, Bénin</p>
+      <p class="vision">
+        Futur expert XR et fondateur d'une entreprise référente en XR
+        dans l'Afrique de l'Ouest. En attendant — deux projets déployés,
+        une scène 3D, et beaucoup d'ambition.
+      </p>
+    </section>
+
+    <!-- PROJECTS BAY -->
+    <section class="projects">
+      <p class="section-title">Projects Bay</p>
+      <div class="projects-grid">
+
+        <article class="project-card">
+          <img
+            class="screenshot"
+            src="/assets/images/overvue.webp"
+            alt="Capture d'écran d'Overvue — outil de gestion de projets"
+            onerror="this.style.display='none'"
+          />
+          <h3>Overvue</h3>
+          <p>Gestion de projets Blazor Server, déployé sur Render. Suivi des tâches, tableau de bord, authentification.</p>
+          <a class="btn-live" href="https://overvue.onrender.com" target="_blank" rel="noopener noreferrer">→ Voir Live</a>
         </article>
-        <article class="card">
-          <span class="badge">Projects Bay</span>
-          <h2>BManager</h2>
-          <p>Dashboard Blazor + MudBlazor avec graphiques interactifs.</p>
+
+        <article class="project-card">
+          <img
+            class="screenshot"
+            src="/assets/images/bmanager.webp"
+            alt="Capture d'écran de BManager — dashboard Blazor"
+            onerror="this.style.display='none'"
+          />
+          <h3>BManager</h3>
+          <p>Dashboard Blazor + MudBlazor avec graphiques interactifs. Visualisation de données, rapports, KPIs.</p>
+          <a class="btn-live" href="https://bmanager.onrender.com" target="_blank" rel="noopener noreferrer">→ Voir Live</a>
         </article>
-        <article class="card">
-          <span class="badge">Skills Core</span>
-          <h2>Compétences</h2>
-          <p>C#, Blazor, A-Frame, MudBlazor, RFID/POS et plus à venir.</p>
-        </article>
-      </section>
-    </main>
-  </body>
+
+      </div>
+    </section>
+
+    <!-- SKILLS CORE -->
+    <section class="skills">
+      <p class="section-title">Skills Core</p>
+      <div class="skills-grid">
+        <span class="skill-tag">C#</span>
+        <span class="skill-tag">Blazor Server</span>
+        <span class="skill-tag">A-Frame / WebXR</span>
+        <span class="skill-tag">MudBlazor</span>
+        <span class="skill-tag">RFID / POS</span>
+        <span class="skill-tag">.NET Fullstack</span>
+        <span class="skill-tag">Flutter</span>
+        <span class="skill-tag">SQL / EF Core</span>
+        <span class="skill-tag">Git / GitHub</span>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© 2026 Brandon Degbe · brandondegbe.me · Cotonou, Bénin</p>
+  </footer>
+
+</body>
 </html>

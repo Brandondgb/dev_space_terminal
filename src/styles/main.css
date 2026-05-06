@@ -1,0 +1,104 @@
+/* ═══════════════════════════════════════════
+   main.css — The Dev Space Terminal
+   Thème : Cyber terminal (noir, vert, cyan)
+═══════════════════════════════════════════ */
+
+:root {
+  --c-bg:       #000000;
+  --c-surface:  #0d1f14;
+  --c-green:    #2E9E72;
+  --c-cyan:     #00FFCC;
+  --c-text:     #E0FFE8;
+  --c-muted:    #6aab89;
+  --c-border:   #1a4a30;
+  --font-mono:  'Courier New', Courier, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-mono);
+  overflow: hidden;
+}
+
+/* ── LOADER ────────────────────────────────── */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--c-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#loader.loader--hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: min(480px, 90vw);
+}
+
+.loader-title {
+  font-size: clamp(1rem, 4vw, 1.4rem);
+  font-weight: bold;
+  color: var(--c-green);
+  letter-spacing: 0.2em;
+  text-align: center;
+}
+
+.loader-sub {
+  font-size: 0.75rem;
+  color: var(--c-muted);
+  letter-spacing: 0.15em;
+}
+
+.loader-bar-wrap {
+  width: 100%;
+  height: 3px;
+  background: var(--c-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.loader-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--c-green);
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--c-green);
+  transition: width 0.15s ease;
+}
+
+.loader-hint {
+  font-size: 0.7rem;
+  color: var(--c-muted);
+  letter-spacing: 0.1em;
+}
+
+.loader-fallback-btn {
+  margin-top: 8px;
+  padding: 8px 20px;
+  border: 1px solid var(--c-green);
+  color: var(--c-green);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  transition: background 0.2s, color 0.2s;
+}
+
+.loader-fallback-btn:hover {
+  background: var(--c-green);
+  color: var(--c-bg);
+}

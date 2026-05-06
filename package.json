@@ -1,9 +1,16 @@
 {
   "name": "dev-space-terminal",
-  "private": true,
-  "version": "0.1.0",
-  "description": "Portfolio WebXR immersif pour The Dev Space Terminal",
+  "version": "1.0.0",
+  "description": "Portfolio WebXR immersif — The Dev Space Terminal",
   "scripts": {
-    "start": "npx serve ."
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "aframe": "^1.6.0"
   }
 }
