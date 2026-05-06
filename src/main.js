@@ -33,7 +33,7 @@ async function checkWebXR() {
   if (!supported) {
     // Ne pas rediriger automatiquement — juste afficher le bouton fallback
     const btn = document.createElement('a');
-    btn.href = '/fallback/index.html';
+    btn.href = '../fallback/index.html';
     btn.className = 'loader-fallback-btn';
     btn.textContent = 'Ouvrir la version 2D →';
     document.querySelector('.loader-inner')?.appendChild(btn);
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loader && !loader.classList.contains('loader--hidden')) {
       loaderHint.textContent = 'Chargement lent — version 2D disponible';
       const btn = document.createElement('a');
-      btn.href = '/fallback/index.html';
+      btn.href = '../fallback/index.html';
       btn.className = 'loader-fallback-btn';
       btn.textContent = 'Ouvrir la version 2D →';
       loader.querySelector('.loader-inner').appendChild(btn);

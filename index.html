@@ -35,11 +35,21 @@
     }
 
     .frame {
-      width: min(1080px, 100%);
-      background: var(--panel);
+      width: min(1120px, 100%);
+      background: linear-gradient(180deg, rgba(10, 20, 14, 0.96), rgba(5, 8, 6, 0.94));
       border: 1px solid var(--line);
       box-shadow: var(--shadow);
-      padding: clamp(20px, 4vw, 40px);
+      padding: clamp(18px, 4vw, 40px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .frame::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(0, 255, 204, 0.08), transparent 28%);
+      pointer-events: none;
     }
 
     .topline {
@@ -49,8 +59,10 @@
       flex-wrap: wrap;
       align-items: center;
       border-bottom: 1px solid var(--line);
-      padding-bottom: 16px;
+      padding-bottom: 18px;
       margin-bottom: 26px;
+      position: relative;
+      z-index: 1;
     }
 
     .eyebrow {
@@ -62,16 +74,17 @@
     }
 
     h1 {
-      color: var(--green);
-      letter-spacing: 0.14em;
-      font-size: clamp(1.6rem, 4.8vw, 3rem);
-      line-height: 1.1;
+      color: var(--text);
+      letter-spacing: 0.06em;
+      font-size: clamp(1.7rem, 5vw, 3rem);
+      line-height: 1.05;
+      margin-bottom: 4px;
     }
 
     .subtitle {
       color: var(--muted);
       max-width: 760px;
-      margin-top: 10px;
+      margin-top: 6px;
       font-size: 0.95rem;
     }
 
@@ -116,9 +129,11 @@
 
     .hero {
       display: grid;
-      grid-template-columns: 1.4fr 0.9fr;
+      grid-template-columns: 1.35fr 0.85fr;
       gap: 18px;
       margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
     }
 
     .panel {
@@ -129,15 +144,15 @@
 
     .headline {
       color: var(--green);
-      letter-spacing: 0.1em;
-      font-size: clamp(1.45rem, 4vw, 2.4rem);
+      letter-spacing: 0.06em;
+      font-size: clamp(1.5rem, 4vw, 2.55rem);
       margin-bottom: 10px;
     }
 
     .tagline {
       color: var(--cyan);
-      letter-spacing: 0.14em;
-      font-size: 0.88rem;
+      letter-spacing: 0.12em;
+      font-size: 0.86rem;
       text-transform: uppercase;
       margin-bottom: 14px;
     }
@@ -146,6 +161,7 @@
       color: var(--text);
       opacity: 0.92;
       font-size: 0.95rem;
+      max-width: 60ch;
     }
 
     .meta-grid,
@@ -157,6 +173,24 @@
     .meta-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
       margin-top: 20px;
+    }
+
+    .profile-line {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      color: var(--cyan);
+      font-size: 0.76rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .profile-line::before {
+      content: '';
+      width: 28px;
+      height: 1px;
+      background: var(--cyan);
     }
 
     .meta,
@@ -247,37 +281,38 @@
   <main class="frame">
     <header class="topline">
       <div>
-        <div class="eyebrow">Version 2D recommandée</div>
-        <h1>THE DEV SPACE TERMINAL</h1>
-        <p class="subtitle">Interface sobre, lisible et orientée recruteur. La version 3D reste optionnelle, mais la version 2D est désormais la priorité.</p>
+        <div class="eyebrow">Portfolio</div>
+        <h1>Brandon Degbe</h1>
+        <p class="subtitle">Sélectionnez l’expérience la plus adaptée : une version 2D claire et professionnelle, ou une version immersive WebXR.</p>
       </div>
       <div class="actions">
-        <a class="btn" href="/fallback/index.html">Ouvrir le portfolio 2D</a>
-        <a class="btn-secondary" href="/webxr/index.html">Version WebXR</a>
+        <a class="btn" href="fallback/index.html">Entrer en version 2D</a>
+        <a class="btn-secondary" href="webxr/index.html">Entrer en version immersive</a>
       </div>
     </header>
 
     <section class="hero">
       <article class="panel">
         <div class="tagline">.Net Fullstack · XR Dev · Flutter Dev</div>
-        <h2 class="headline">Brandon Degbe</h2>
+        <h2 class="headline">Choisissez le format de consultation</h2>
         <p class="summary">
-          Développeur orienté produit avec un profil web, desktop, mobile et XR.
-          Pour une lecture simple et professionnelle, le portfolio 2D est proposé en premier.
+          Le portfolio est disponible en deux expériences complémentaires :
+          une interface 2D sobre, pensée pour la lecture rapide, et une scène WebXR plus immersive.
         </p>
+        <div class="profile-line">Ouvert aux opportunités · Cotonou, Bénin</div>
 
         <div class="meta-grid">
           <div class="meta">
-            <span>Positionnement</span>
-            <strong>.Net Fullstack | XR Dev | Flutter Dev</strong>
+            <span>Version 2D</span>
+            <strong>Présentation structurée, rapide et lisible</strong>
           </div>
           <div class="meta">
-            <span>Ville</span>
-            <strong>Cotonou, Bénin</strong>
+            <span>Version immersive</span>
+            <strong>Navigation WebXR, scène A-Frame</strong>
           </div>
           <div class="meta">
-            <span>Accès rapide</span>
-            <strong>Portfolio 2D + WebXR</strong>
+            <span>Objectif</span>
+            <strong>Adapter la visite au contexte du recruteur</strong>
           </div>
         </div>
       </article>
@@ -285,38 +320,30 @@
       <aside class="panel">
         <div class="mini-grid">
           <div class="mini">
-            <span>Projets</span>
-            <strong>Overvue, BManager, OptimaBatis, NENIA, Optivote, Burando Shoppu</strong>
+            <span>2D</span>
+            <strong>Idéal pour une lecture rapide et un entretien de recrutement.</strong>
           </div>
           <div class="mini">
-            <span>Expérience</span>
-            <strong>SODSON CORP · Youpilab</strong>
+            <span>Immersive</span>
+            <strong>Recommandée pour montrer la dimension technique et XR.</strong>
           </div>
           <div class="mini">
-            <span>Compétences</span>
-            <strong>C#, Blazor, Flutter, WebXR, SQL, Java</strong>
+            <span>Navigation</span>
+            <strong>Le choix dépend du temps et du format souhaité par le recruteur.</strong>
           </div>
         </div>
       </aside>
     </section>
 
-    <div class="section-title">Skills Core</div>
+    <div class="section-title">Accès direct</div>
     <div class="chips">
-      <span class="chip">C#</span>
-      <span class="chip">Blazor Server</span>
-      <span class="chip">A-Frame / WebXR</span>
-      <span class="chip">MudBlazor</span>
-      <span class="chip">Flutter</span>
-      <span class="chip">SQL / EF Core</span>
-      <span class="chip">Git / GitHub</span>
-      <span class="chip">API Web</span>
-      <span class="chip">Java</span>
-      <span class="chip">Figma</span>
+      <a class="chip" href="fallback/index.html" style="text-decoration:none;">Version 2D</a>
+      <a class="chip" href="webxr/index.html" style="text-decoration:none;">Version immersive</a>
     </div>
 
     <footer class="footer">
       <p>© 2026 Brandon Degbe</p>
-      <p>Le 2D est la version principale.</p>
+      <p>Choisissez le format le plus adapté.</p>
     </footer>
   </main>
 </body>
