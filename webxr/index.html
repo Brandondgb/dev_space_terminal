@@ -7,73 +7,284 @@
     <title>The Dev Space Terminal — WebXR</title>
     <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
     <link rel="stylesheet" href="../src/styles/main.css" />
+
     <style>
+      /* ── Reset & base ── */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      /* ── Custom cursor ── */
+      body { cursor: none; }
+      #cursor {
+        position: fixed; top: 0; left: 0; width: 18px; height: 18px;
+        border: 1.5px solid #00FFCC; border-radius: 50%;
+        pointer-events: none; z-index: 99999;
+        transform: translate(-50%, -50%);
+        transition: transform 0.08s ease, opacity 0.2s ease;
+        mix-blend-mode: difference;
+      }
+      #cursor-dot {
+        position: fixed; top: 0; left: 0; width: 4px; height: 4px;
+        background: #00FFCC; border-radius: 50%;
+        pointer-events: none; z-index: 99999;
+        transform: translate(-50%, -50%);
+      }
+
+      /* ── Scanline overlay ── */
+      #scanlines {
+        position: fixed; inset: 0; z-index: 9990; pointer-events: none;
+        background: repeating-linear-gradient(
+          to bottom,
+          transparent 0px, transparent 3px,
+          rgba(0, 255, 204, 0.018) 3px, rgba(0, 255, 204, 0.018) 4px
+        );
+        animation: scanroll 12s linear infinite;
+      }
+      @keyframes scanroll {
+        0%   { background-position: 0 0; }
+        100% { background-position: 0 200px; }
+      }
+
+      /* ── Vignette ── */
+      #vignette {
+        position: fixed; inset: 0; z-index: 9989; pointer-events: none;
+        background: radial-gradient(ellipse at center, transparent 55%, rgba(0,6,3,0.72) 100%);
+      }
+
+      /* ── Return button ── */
       .return-home-btn {
-        position: fixed;
-        top: 16px;
-        left: 16px;
-        z-index: 9999;
-        padding: 10px 14px;
+        position: fixed; top: 16px; left: 16px;
+        z-index: 9999; padding: 9px 14px;
         border: 1px solid #00FFCC;
         background: rgba(4, 7, 5, 0.88);
         color: #00FFCC;
         text-decoration: none;
         font-family: 'Courier New', Courier, monospace;
-        font-size: 0.78rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
+        font-size: 0.76rem; letter-spacing: 0.14em; text-transform: uppercase;
         backdrop-filter: blur(8px);
-        transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+        transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+        clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+      }
+      .return-home-btn::before {
+        content: ''; position: absolute; inset: 0;
+        background: #00FFCC; opacity: 0;
+        transition: opacity 0.18s ease;
+      }
+      .return-home-btn:hover {
+        color: #00110b;
+        box-shadow: 0 0 18px rgba(0,255,204,0.35);
+        background: #00FFCC;
       }
 
-      .return-home-btn:hover {
-        transform: translateY(-1px);
-        background: #00FFCC;
-        color: #00110b;
+      /* ── HUD Zone Indicator ── */
+      #hud {
+        position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+        z-index: 9998; pointer-events: none;
+        display: flex; align-items: center; gap: 10px;
+        padding: 8px 20px;
+        border: 1px solid rgba(0,255,204,0.3);
+        background: rgba(4, 7, 5, 0.78);
+        backdrop-filter: blur(10px);
+        clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
       }
+      #hud-label {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+        color: rgba(0,255,204,0.45);
+      }
+      #hud-zone {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase;
+        color: #00FFCC;
+        min-width: 160px; text-align: center;
+        animation: hudblink 0.08s step-end infinite;
+      }
+      #hud-coords {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.62rem; letter-spacing: 0.12em;
+        color: rgba(46,158,114,0.6);
+        min-width: 110px; text-align: right;
+      }
+
+      /* ── Loader ── */
+      #loader {
+        position: fixed; inset: 0; z-index: 10000;
+        background: #000803;
+        display: flex; align-items: center; justify-content: center;
+        flex-direction: column;
+      }
+      #loader::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: repeating-linear-gradient(
+          to bottom,
+          transparent 0px, transparent 3px,
+          rgba(0,255,204,0.02) 3px, rgba(0,255,204,0.02) 4px
+        );
+        pointer-events: none;
+      }
+      .loader-inner {
+        text-align: center; width: 360px; position: relative;
+      }
+      .loader-glitch {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 1.05rem; letter-spacing: 0.35em; text-transform: uppercase;
+        color: #00FFCC; margin-bottom: 6px;
+        text-shadow: 0 0 12px rgba(0,255,204,0.5);
+        animation: glitch 4s infinite;
+        position: relative;
+      }
+      .loader-glitch::before, .loader-glitch::after {
+        content: attr(data-text);
+        position: absolute; left: 0; width: 100%;
+        color: #00FFCC;
+      }
+      .loader-glitch::before {
+        animation: glitchTop 4s infinite; clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+        transform: translateX(-2px); color: #2E9E72; opacity: 0.7;
+      }
+      .loader-glitch::after {
+        animation: glitchBot 4s infinite; clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+        transform: translateX(2px); color: #00FFCC; opacity: 0.5;
+      }
+      @keyframes glitch {
+        0%, 92%, 100% { transform: none; }
+        93% { transform: translateX(-3px) skewX(-1deg); }
+        94% { transform: translateX(3px) skewX(1deg); }
+        95% { transform: translateX(-1px); }
+        96% { transform: none; }
+        97% { transform: translateX(2px) skewX(-0.5deg); }
+      }
+      @keyframes glitchTop {
+        0%, 90%, 100% { transform: translateX(-2px); opacity: 0; }
+        91% { transform: translateX(4px); opacity: 0.7; }
+        93% { transform: translateX(-3px); opacity: 0.6; }
+        95% { opacity: 0; }
+      }
+      @keyframes glitchBot {
+        0%, 90%, 100% { transform: translateX(2px); opacity: 0; }
+        92% { transform: translateX(-4px); opacity: 0.5; }
+        94% { transform: translateX(2px); opacity: 0.4; }
+        95% { opacity: 0; }
+      }
+      .loader-divider {
+        width: 100%; height: 1px;
+        background: linear-gradient(to right, transparent, #2E9E72, #00FFCC, #2E9E72, transparent);
+        margin: 12px 0;
+        opacity: 0.6;
+      }
+      .loader-terminal {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.7rem; color: #2E9E72; letter-spacing: 0.08em;
+        text-align: left; min-height: 80px;
+        margin-bottom: 18px;
+      }
+      .loader-terminal .line { display: block; margin-bottom: 3px; opacity: 0; }
+      .loader-terminal .line.show { animation: fadein 0.2s ease forwards; }
+      .loader-terminal .prompt { color: #00FFCC; }
+      @keyframes fadein { to { opacity: 1; } }
+      .loader-bar-wrap {
+        width: 100%; height: 3px;
+        background: rgba(0,255,204,0.1);
+        border: 1px solid rgba(0,255,204,0.2);
+        overflow: hidden; position: relative; margin-bottom: 10px;
+      }
+      .loader-bar {
+        height: 100%; width: 0%; background: #00FFCC;
+        box-shadow: 0 0 10px #00FFCC, 0 0 20px rgba(0,255,204,0.4);
+        transition: width 0.4s ease;
+        position: relative;
+      }
+      .loader-bar::after {
+        content: ''; position: absolute; right: 0; top: 0; bottom: 0;
+        width: 20px;
+        background: linear-gradient(to right, transparent, #00FFCC);
+        filter: blur(2px);
+      }
+      .loader-pct {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.62rem; color: rgba(0,255,204,0.5);
+        letter-spacing: 0.15em; text-align: right;
+      }
+      .loader-corner {
+        position: absolute; width: 10px; height: 10px;
+        border-color: #00FFCC; border-style: solid; opacity: 0.5;
+      }
+      .loader-corner.tl { top: -12px; left: -12px; border-width: 1px 0 0 1px; }
+      .loader-corner.tr { top: -12px; right: -12px; border-width: 1px 1px 0 0; }
+      .loader-corner.bl { bottom: -12px; left: -12px; border-width: 0 0 1px 1px; }
+      .loader-corner.br { bottom: -12px; right: -12px; border-width: 0 1px 1px 0; }
     </style>
   </head>
   <body>
 
+    <!-- Custom cursor -->
+    <div id="cursor"></div>
+    <div id="cursor-dot"></div>
+
+    <!-- Atmosphere overlays -->
+    <div id="scanlines"></div>
+    <div id="vignette"></div>
+
+    <!-- HUD -->
+    <div id="hud">
+      <span id="hud-label">ZONE //</span>
+      <span id="hud-zone">HUB CENTRAL</span>
+      <span id="hud-coords">x:0.00 z:0.00</span>
+    </div>
+
+    <!-- Return button -->
     <a class="return-home-btn" href="../index.html">← Retour accueil 2D</a>
 
-    <!-- ═══════════════════════════════════════════
-         LOADER / SPLASH SCREEN
-         Affiché pendant l'init A-Frame / WebXR.
-         Retiré automatiquement via main.js
-    ═══════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════
+         LOADER
+    ══════════════════════════════════════ -->
     <div id="loader">
       <div class="loader-inner">
-        <p class="loader-title">THE DEV SPACE TERMINAL</p>
-        <p class="loader-sub">Initialisation WebXR...</p>
+        <div class="loader-corner tl"></div>
+        <div class="loader-corner tr"></div>
+        <div class="loader-corner bl"></div>
+        <div class="loader-corner br"></div>
+
+        <p class="loader-glitch" data-text="THE DEV SPACE TERMINAL">THE DEV SPACE TERMINAL</p>
+        <div class="loader-divider"></div>
+
+        <div class="loader-terminal" id="loader-terminal">
+          <span class="line" id="l0"><span class="prompt">$ </span>init WebXR engine...</span>
+          <span class="line" id="l1"><span class="prompt">$ </span>loading A-Frame components...</span>
+          <span class="line" id="l2"><span class="prompt">$ </span>compiling shader pipeline...</span>
+          <span class="line" id="l3"><span class="prompt">$ </span>building spatial index...</span>
+          <span class="line" id="l4"><span class="prompt">$ </span>spawning project cards...</span>
+          <span class="line" id="l5"><span class="prompt">$ </span>calibrating skill orbs...</span>
+          <span class="line" id="l6"><span class="prompt">✓ </span><span style="color:#00FFCC">READY — entering scene</span></span>
+        </div>
+
         <div class="loader-bar-wrap">
           <div class="loader-bar" id="loader-bar"></div>
         </div>
-        <p class="loader-hint" id="loader-hint">Chargement de la scène</p>
+        <p class="loader-pct" id="loader-pct">0%</p>
       </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════
-         SCÈNE A-FRAME
-    ═══════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════
+         A-FRAME SCENE
+    ══════════════════════════════════════ -->
     <a-scene
       id="main-scene"
       background="color: #000000"
       renderer="antialias: true; colorManagement: true"
+      fog="type: exponential; color: #000a05; density: 0.025"
       vr-mode-ui="enabled: true"
       loading-screen="enabled: false"
     >
 
-      <!-- Assets (lazy loaded) -->
+      <!-- Assets -->
       <a-assets timeout="10000">
-        <!-- Blazor Projects -->
-        <img id="img-overvue"  src="../assets/images/overvue-dashboard.png"  crossorigin="anonymous" />
-        <img id="img-bmanager" src="../assets/images/bmanager.svg" crossorigin="anonymous" />
-        <!-- Additional Projects (placeholder) -->
-        <img id="img-optimabatis"   src="../assets/images/optimabatis.svg"   crossorigin="anonymous" />
-        <img id="img-nenia"         src="../assets/images/nenia.svg"         crossorigin="anonymous" />
-        <img id="img-optivote"      src="../assets/images/optivote.svg"      crossorigin="anonymous" />
-        <img id="img-burando"       src="../assets/images/burando.svg"       crossorigin="anonymous" />
+        <img id="img-overvue"      src="../assets/images/overvue-dashboard.png"  crossorigin="anonymous" />
+        <img id="img-bmanager"     src="../assets/images/bmanager.svg"           crossorigin="anonymous" />
+        <img id="img-optimabatis"  src="../assets/images/optimabatis.svg"        crossorigin="anonymous" />
+        <img id="img-nenia"        src="../assets/images/nenia.svg"              crossorigin="anonymous" />
+        <img id="img-optivote"     src="../assets/images/optivote.svg"           crossorigin="anonymous" />
+        <img id="img-burando"      src="../assets/images/burando.svg"            crossorigin="anonymous" />
       </a-assets>
 
       <!-- ── Caméra ── -->
@@ -83,185 +294,425 @@
           wasd-controls="acceleration: 20"
           cursor="fuse: false; rayOrigin: mouse"
         >
-          <!-- Curseur de visée (desktop) -->
+          <!-- Réticule de visée -->
           <a-entity
             cursor="fuse: false"
             position="0 0 -1"
-            geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.015"
-            material="color: #00FFCC; shader: flat; opacity: 0.7"
+            geometry="primitive: ring; radiusInner: 0.009; radiusOuter: 0.013"
+            material="color: #00FFCC; shader: flat; opacity: 0.75"
           ></a-entity>
+          <!-- Croix centrale -->
+          <a-entity position="0 0 -1">
+            <a-box material="color:#00FFCC;shader:flat;opacity:0.35" scale="0.001 0.025 0.001"></a-box>
+            <a-box material="color:#00FFCC;shader:flat;opacity:0.35" scale="0.025 0.001 0.001"></a-box>
+          </a-entity>
         </a-camera>
       </a-entity>
 
       <!-- ── Sol cyber ── -->
       <a-entity scene-floor></a-entity>
 
-      <!-- ── Lumières ── -->
-      <a-light type="ambient"      color="#112211" intensity="1.2"></a-light>
-      <a-light type="point" color="#2E9E72" intensity="1.5" position="0 3 0" distance="15"></a-light>
-      <a-light type="point" color="#00FFCC" intensity="0.4" position="-8 2 0" distance="10"></a-light>
-      <a-light type="point" color="#00FFCC" intensity="0.4" position="8 2 0"  distance="10"></a-light>
+      <!-- ── Sol grille (plan de référence) ── -->
+      <a-entity>
+        <!-- Grille principale -->
+        <a-plane
+          rotation="-90 0 0"
+          width="40" height="40"
+          material="color: #001a0d; wireframe: true; opacity: 0.3; transparent: true"
+          position="0 0.01 0"
+        ></a-plane>
+        <!-- Grille fine -->
+        <a-plane
+          rotation="-90 0 0"
+          width="40" height="40"
+          material="color: #002211; wireframe: true; opacity: 0.15; transparent: true"
+          position="0 0.015 0"
+          scale="4 4 4"
+        ></a-plane>
+      </a-entity>
 
-      <!-- ── Hub Central (0, 0, 0) ── -->
-      <a-entity id="hub" hub-panel position="0 0 0"></a-entity>
+      <!-- ── Lumières ── -->
+      <a-light type="ambient"      color="#0a1f10" intensity="1.4"></a-light>
+      <a-light type="point" color="#2E9E72" intensity="1.8" position="0 4 0"   distance="18"></a-light>
+      <a-light type="point" color="#00FFCC" intensity="0.5" position="-8 2 0"  distance="12"></a-light>
+      <a-light type="point" color="#00FFCC" intensity="0.5" position=" 8 2 0"  distance="12"></a-light>
+      <a-light type="point" color="#1A6B4A" intensity="0.6" position="0 2 -8"  distance="12"></a-light>
+      <a-light type="point" color="#2E9E72" intensity="0.4" position="0 2  8"  distance="12"></a-light>
+
+      <!-- ── Hub Central ── -->
+      <a-entity id="hub" hub-panel position="0 0 0">
+        <!-- Anneaux orbitaux décoratifs -->
+        <a-torus
+          color="#00FFCC"
+          material="color:#00FFCC;shader:flat;opacity:0.18;transparent:true;wireframe:false"
+          radius="1.4" radius-tubular="0.008"
+          position="0 1.6 0"
+          animation="property:rotation;from:0 0 0;to:360 0 0;dur:8000;loop:true;easing:linear"
+        ></a-torus>
+        <a-torus
+          material="color:#2E9E72;shader:flat;opacity:0.14;transparent:true"
+          radius="1.8" radius-tubular="0.006"
+          position="0 1.6 0"
+          animation="property:rotation;from:0 0 0;to:0 360 20;dur:13000;loop:true;easing:linear"
+        ></a-torus>
+        <a-torus
+          material="color:#00FFCC;shader:flat;opacity:0.10;transparent:true"
+          radius="2.2" radius-tubular="0.005"
+          position="0 1.6 0"
+          animation="property:rotation;from:20 0 0;to:20 360 0;dur:18000;loop:true;easing:linear"
+        ></a-torus>
+        <!-- Orbe central pulsant -->
+        <a-sphere
+          material="color:#00FFCC;shader:flat;opacity:0.12;transparent:true"
+          radius="0.22"
+          position="0 1.6 0"
+          animation__scale="property:scale;from:1 1 1;to:1.25 1.25 1.25;dir:alternate;loop:true;dur:2200;easing:easeInOutSine"
+          animation__op="property:material.opacity;from:0.12;to:0.28;dir:alternate;loop:true;dur:2200;easing:easeInOutSine"
+        ></a-sphere>
+        <a-sphere
+          material="color:#2E9E72;shader:flat;opacity:0.55;transparent:true"
+          radius="0.10"
+          position="0 1.6 0"
+        ></a-sphere>
+      </a-entity>
+
+      <!-- ── Piliers de zone (délimiteurs visuels) ── -->
+      <!-- Pilier Projects (gauche) -->
+      <a-entity position="-8 0 0">
+        <a-cylinder color="#001a0d" material="color:#00FFCC;shader:flat;opacity:0.08;transparent:true" radius="0.05" height="4.5" position="0 2.25 2.5"></a-cylinder>
+        <a-cylinder color="#001a0d" material="color:#00FFCC;shader:flat;opacity:0.08;transparent:true" radius="0.05" height="4.5" position="0 2.25 -2.5"></a-cylinder>
+        <a-light type="point" color="#00FFCC" intensity="0.25" distance="5" position="0 4.5 0"></a-light>
+      </a-entity>
+      <!-- Pilier Skills (droite) -->
+      <a-entity position="8 0 0">
+        <a-cylinder material="color:#2E9E72;shader:flat;opacity:0.08;transparent:true" radius="0.05" height="4.5" position="0 2.25 2.5"></a-cylinder>
+        <a-cylinder material="color:#2E9E72;shader:flat;opacity:0.08;transparent:true" radius="0.05" height="4.5" position="0 2.25 -2.5"></a-cylinder>
+        <a-light type="point" color="#2E9E72" intensity="0.25" distance="5" position="0 4.5 0"></a-light>
+      </a-entity>
+
+      <!-- ── Indicateurs de navigation flottants ── -->
+      <!-- Flèche vers Projects (gauche) -->
+      <a-entity position="-3.5 1.6 0">
+        <a-text value="◄ PROJECTS" color="#2E9E72" font="monoid" align="center" scale="0.55 0.55 0.55"
+          animation="property:position;from:-3.5 1.6 0;to:-3.7 1.6 0;dir:alternate;loop:true;dur:1600;easing:easeInOutSine"
+        ></a-text>
+      </a-entity>
+      <!-- Flèche vers Skills (droite) -->
+      <a-entity position="3.5 1.6 0">
+        <a-text value="SKILLS ►" color="#2E9E72" font="monoid" align="center" scale="0.55 0.55 0.55"
+          animation="property:position;from:3.5 1.6 0;to:3.7 1.6 0;dir:alternate;loop:true;dur:1600;easing:easeInOutSine"
+        ></a-text>
+      </a-entity>
+      <!-- Flèche vers Experience (arrière) -->
+      <a-entity position="0 1.6 -3.5">
+        <a-text value="▲ EXPERIENCE" color="#00FFCC" font="monoid" align="center" scale="0.55 0.55 0.55" rotation="0 180 0"
+          animation="property:position;from:0 1.6 -3.5;to:0 1.6 -3.7;dir:alternate;loop:true;dur:1600;easing:easeInOutSine"
+        ></a-text>
+      </a-entity>
+      <!-- Flèche vers Contact (avant) -->
+      <a-entity position="0 1.6 3.5">
+        <a-text value="▼ CONTACT" color="#00FFCC" font="monoid" align="center" scale="0.55 0.55 0.55"
+          animation="property:position;from:0 1.6 3.5;to:0 1.6 3.7;dir:alternate;loop:true;dur:1600;easing:easeInOutSine"
+        ></a-text>
+      </a-entity>
+
+      <!-- ── Particules ambiantes flottantes ── -->
+      <a-entity id="particles">
+        <!-- Cluster 1 — zone hub -->
+        <a-sphere material="color:#00FFCC;shader:flat;opacity:0.6;transparent:true" radius="0.018" position="-1.5 2.2 -1.2" animation="property:position;from:-1.5 2.2 -1.2;to:-1.5 3.0 -1.2;dir:alternate;loop:true;dur:3100;easing:easeInOutSine"></a-sphere>
+        <a-sphere material="color:#2E9E72;shader:flat;opacity:0.5;transparent:true" radius="0.012" position="1.8 1.5 0.8"   animation="property:position;from:1.8 1.5 0.8;to:1.8 2.4 0.8;dir:alternate;loop:true;dur:2700;easing:easeInOutSine"></a-sphere>
+        <a-sphere material="color:#00FFCC;shader:flat;opacity:0.45;transparent:true" radius="0.015" position="0.3 3.0 -0.7" animation="property:position;from:0.3 3.0 -0.7;to:0.5 3.8 -0.5;dir:alternate;loop:true;dur:3800;easing:easeInOutSine"></a-sphere>
+        <!-- Cluster 2 — zone projects -->
+        <a-sphere material="color:#00FFCC;shader:flat;opacity:0.55;transparent:true" radius="0.014" position="-9.5 2.0 0.5"  animation="property:position;from:-9.5 2.0 0.5;to:-9.2 2.8 0.8;dir:alternate;loop:true;dur:2400;easing:easeInOutSine"></a-sphere>
+        <a-sphere material="color:#2E9E72;shader:flat;opacity:0.4;transparent:true"  radius="0.010" position="-7.0 3.2 1.2"  animation="property:position;from:-7.0 3.2 1.2;to:-7.3 4.0 0.9;dir:alternate;loop:true;dur:3500;easing:easeInOutSine"></a-sphere>
+        <a-sphere material="color:#1A6B4A;shader:flat;opacity:0.5;transparent:true"  radius="0.013" position="-8.8 1.4 -1.0" animation="property:position;from:-8.8 1.4 -1.0;to:-8.5 2.2 -1.3;dir:alternate;loop:true;dur:3000;easing:easeInOutSine"></a-sphere>
+        <!-- Cluster 3 — zone skills -->
+        <a-sphere material="color:#2E9E72;shader:flat;opacity:0.55;transparent:true" radius="0.016" position="9.2 2.5 -0.5"  animation="property:position;from:9.2 2.5 -0.5;to:9.0 3.3 -0.2;dir:alternate;loop:true;dur:2900;easing:easeInOutSine"></a-sphere>
+        <a-sphere material="color:#00FFCC;shader:flat;opacity:0.4;transparent:true"  radius="0.011" position="7.5 1.8 1.3"   animation="property:position;from:7.5 1.8 1.3;to:7.8 2.6 1.6;dir:alternate;loop:true;dur:3300;easing:easeInOutSine"></a-sphere>
+        <a-sphere material="color:#2E9E72;shader:flat;opacity:0.48;transparent:true" radius="0.013" position="8.3 3.5 -1.5"  animation="property:position;from:8.3 3.5 -1.5;to:8.6 4.2 -1.2;dir:alternate;loop:true;dur:2600;easing:easeInOutSine"></a-sphere>
+        <!-- Cluster 4 — zone experience -->
+        <a-sphere material="color:#00FFCC;shader:flat;opacity:0.5;transparent:true"  radius="0.012" position="-1.0 2.8 -9.5" animation="property:position;from:-1.0 2.8 -9.5;to:-0.7 3.6 -9.2;dir:alternate;loop:true;dur:3200;easing:easeInOutSine"></a-sphere>
+        <a-sphere material="color:#2E9E72;shader:flat;opacity:0.45;transparent:true" radius="0.015" position="1.5 1.6 -8.2"  animation="property:position;from:1.5 1.6 -8.2;to:1.2 2.4 -8.5;dir:alternate;loop:true;dur:2800;easing:easeInOutSine"></a-sphere>
+        <!-- Cluster 5 — zone contact -->
+        <a-sphere material="color:#00FFCC;shader:flat;opacity:0.5;transparent:true"  radius="0.013" position="0.8 2.2 9.0"   animation="property:position;from:0.8 2.2 9.0;to:0.5 3.0 9.3;dir:alternate;loop:true;dur:2900;easing:easeInOutSine"></a-sphere>
+        <a-sphere material="color:#2E9E72;shader:flat;opacity:0.42;transparent:true" radius="0.011" position="-1.2 3.0 8.5"  animation="property:position;from:-1.2 3.0 8.5;to:-0.9 3.8 8.8;dir:alternate;loop:true;dur:3400;easing:easeInOutSine"></a-sphere>
+      </a-entity>
 
       <!-- ── Projects Bay (aile gauche) ── -->
       <a-entity id="projects-bay" position="-8 0 0">
-        <!-- Titre de zone -->
+        <!-- Arc de zone -->
+        <a-torus
+          material="color:#2E9E72;shader:flat;opacity:0.2;transparent:true"
+          radius="3.2" radius-tubular="0.025"
+          rotation="0 0 0" position="0 3 0"
+        ></a-torus>
+        <!-- Titre -->
         <a-text
           value="PROJECT HIGHLIGHTS"
-          color="#2E9E72"
-          font="monoid"
-          align="center"
-          position="0 3.5 0"
-          scale="1.2 1.2 1.2"
+          color="#2E9E72" font="monoid"
+          align="center" position="0 4.0 0"
+          scale="1.1 1.1 1.1"
+          animation="property:position;from:0 4.0 0;to:0 4.1 0;dir:alternate;loop:true;dur:3000;easing:easeInOutSine"
         ></a-text>
+        <!-- Séparateur décoratif sous titre -->
+        <a-box material="color:#2E9E72;shader:flat;opacity:0.5;transparent:true" scale="3.2 0.004 0.004" position="0 3.68 0"></a-box>
         <!-- Overvue -->
-        <a-entity
-          project-card="
-            title: Overvue;
-            description: Gestion de projets Blazor Server.\nDéployé sur Render.;
-            image: #img-overvue;
-            url: https://overvue.onrender.com"
-          position="-1.05 2.1 0"
-        ></a-entity>
+        <a-entity project-card="title:Overvue;description:Gestion de projets Blazor Server.\nDéployé sur Render.;image:#img-overvue;url:https://overvue.onrender.com" position="-1.05 2.1 0"></a-entity>
         <!-- BManager -->
-        <a-entity
-          project-card="
-            title: BManager;
-            description: Dashboard Blazor + MudBlazor\navec graphiques interactifs.;
-            image: #img-bmanager;
-            url: https://bmanager.onrender.com"
-          position="1.05 2.1 0"
-        ></a-entity>
+        <a-entity project-card="title:BManager;description:Dashboard Blazor + MudBlazor\navec graphiques interactifs.;image:#img-bmanager;url:https://bmanager.onrender.com" position="1.05 2.1 0"></a-entity>
         <!-- OptimaBatis -->
-        <a-entity
-          project-card="
-            title: OptimaBatis;
-            description: App mobile pour réparations\net constructions. Flutter + Django.;
-            image: #img-optimabatis;
-            url: https://github.com/brandon311005"
-          position="-1.05 0.35 0"
-        ></a-entity>
+        <a-entity project-card="title:OptimaBatis;description:App mobile pour réparations\net constructions. Flutter + Django.;image:#img-optimabatis;url:https://github.com/Brandondgb/" position="-1.05 0.35 0"></a-entity>
         <!-- NENIA -->
-        <a-entity
-          project-card="
-            title: NENIA;
-            description: Gestion boutique desktop.\nC# WinForms + PostgreSQL + API.;
-            image: #img-nenia;
-            url: https://github.com/brandon311005"
-          position="1.05 0.35 0"
-        ></a-entity>
+        <a-entity project-card="title:NENIA;description:Gestion boutique desktop.\nC# WinForms + PostgreSQL + API.;image:#img-nenia;url:https://github.com/Brandondgb/" position="1.05 0.35 0"></a-entity>
         <!-- Optivote -->
-        <a-entity
-          project-card="
-            title: Optivote;
-            description: App votes présidentiels.\nFlutter + Laravel (collectif).;
-            image: #img-optivote;
-            url: https://github.com/brandon311005"
-          position="-1.05 -1.7 0"
-        ></a-entity>
-        <!-- Burando Shoppu -->
-        <a-entity
-          project-card="
-            title: Burando Shoppu;
-            description: Gestion commandes desktop.\nJava - Dépôt Github.;
-            image: #img-burando;
-            url: https://github.com/brandon311005/Burando-Shoppu.git"
-          position="1.05 -1.7 0"
-        ></a-entity>
+        <a-entity project-card="title:Optivote;description:App votes présidentiels.\nFlutter + Laravel (collectif).;image:#img-optivote;url:https://github.com/Brandondgb/" position="-1.05 -1.7 0"></a-entity>
+        <!-- Burando -->
+        <a-entity project-card="title:Burando Shoppu;description:Gestion commandes desktop.\nJava - Dépôt Github.;image:#img-burando;url:https://github.com/Brandondgb/" position="1.05 -1.7 0"></a-entity>
       </a-entity>
 
       <!-- ── Skills Core (aile droite) ── -->
       <a-entity id="skills-core" position="8 0 0">
-        <!-- Titre de zone -->
+        <!-- Arc de zone -->
+        <a-torus
+          material="color:#00FFCC;shader:flat;opacity:0.15;transparent:true"
+          radius="3.2" radius-tubular="0.025"
+          rotation="0 0 0" position="0 3 0"
+        ></a-torus>
+        <!-- Titre -->
         <a-text
           value="SKILLS CORE"
-          color="#2E9E72"
-          font="monoid"
-          align="center"
-          position="0 3.5 0"
-          scale="1.2 1.2 1.2"
+          color="#2E9E72" font="monoid"
+          align="center" position="0 4.0 0"
+          scale="1.1 1.1 1.1"
+          animation="property:position;from:0 4.0 0;to:0 4.1 0;dir:alternate;loop:true;dur:3000;easing:easeInOutSine"
         ></a-text>
-        <!-- Orbs compétences principales -->
-        <a-entity skill-orb="label: C#;          color: #2E9E72" position="-1.5  2.5  0"></a-entity>
-        <a-entity skill-orb="label: Blazor;      color: #2E9E72" position=" 1.5  2.5  0"></a-entity>
-        <a-entity skill-orb="label: A-Frame/WebXR; color: #00FFCC" position=" 0    2.5 -1.5"></a-entity>
-        <a-entity skill-orb="label: MudBlazor;   color: #2E9E72" position="-1.5  1    0"></a-entity>
-        <a-entity skill-orb="label: Flutter;     color: #1A6B4A" position=" 1.5  1    0"></a-entity>
-        <a-entity skill-orb="label: React;       color: #61DAFB" position=" 0    1   -1.5"></a-entity>
-        <!-- Expertise Bars -->
-        <a-text value="Web Dev" color="#00FFCC" font="monoid" align="center" position="-1.5 -0.8 0" scale="0.8 0.8 0.8"></a-text>
-        <a-box material="color: #2E9E72" position="-1.5 -1.4 0" scale="1.5 0.2 0.1"></a-box>
-        <a-text value="75%" color="#00FFCC" font="monoid" align="center" position="-1.5 -1.8 0" scale="0.6 0.6 0.6"></a-text>
-        <a-text value="Desktop" color="#00FFCC" font="monoid" align="center" position="1.5 -0.8 0" scale="0.8 0.8 0.8"></a-text>
-        <a-box material="color: #2E9E72" position="1.5 -1.4 0" scale="1.8 0.2 0.1"></a-box>
-        <a-text value="87%" color="#00FFCC" font="monoid" align="center" position="1.5 -1.8 0" scale="0.6 0.6 0.6"></a-text>
-        <a-text value="Multimedia" color="#00FFCC" font="monoid" align="center" position="0 -2.8 0" scale="0.8 0.8 0.8"></a-text>
-        <a-box material="color: #2E9E72" position="0 -3.4 0" scale="1.6 0.2 0.1"></a-box>
-        <a-text value="80%" color="#00FFCC" font="monoid" align="center" position="0 -3.8 0" scale="0.6 0.6 0.6"></a-text>
+        <a-box material="color:#00FFCC;shader:flat;opacity:0.5;transparent:true" scale="2.8 0.004 0.004" position="0 3.68 0"></a-box>
+        <!-- Orbs compétences -->
+        <a-entity skill-orb="label:C#;color:#2E9E72"             position="-1.5  2.5  0"
+          animation="property:position;from:-1.5 2.5 0;to:-1.5 2.7 0;dir:alternate;loop:true;dur:2200;easing:easeInOutSine"
+        ></a-entity>
+        <a-entity skill-orb="label:Blazor;color:#2E9E72"         position=" 1.5  2.5  0"
+          animation="property:position;from:1.5 2.5 0;to:1.5 2.7 0;dir:alternate;loop:true;dur:2500;easing:easeInOutSine"
+        ></a-entity>
+        <a-entity skill-orb="label:A-Frame/WebXR;color:#00FFCC"  position=" 0    2.5 -1.5"
+          animation="property:position;from:0 2.5 -1.5;to:0 2.7 -1.5;dir:alternate;loop:true;dur:1900;easing:easeInOutSine"
+        ></a-entity>
+        <a-entity skill-orb="label:MudBlazor;color:#2E9E72"      position="-1.5  1    0"
+          animation="property:position;from:-1.5 1 0;to:-1.5 1.2 0;dir:alternate;loop:true;dur:2800;easing:easeInOutSine"
+        ></a-entity>
+        <a-entity skill-orb="label:Flutter;color:#1A6B4A"        position=" 1.5  1    0"
+          animation="property:position;from:1.5 1 0;to:1.5 1.2 0;dir:alternate;loop:true;dur:2100;easing:easeInOutSine"
+        ></a-entity>
+        <a-entity skill-orb="label:React;color:#61DAFB"          position=" 0    1   -1.5"
+          animation="property:position;from:0 1 -1.5;to:0 1.2 -1.5;dir:alternate;loop:true;dur:2400;easing:easeInOutSine"
+        ></a-entity>
+        <!-- Barres d'expertise -->
+        <a-text value="Web Dev"   color="#00FFCC" font="monoid" align="center" position="-1.5 -0.5 0"  scale="0.82 0.82 0.82"></a-text>
+        <a-box  material="color:#0a2215;shader:flat" position="-1.5 -0.95 0" scale="1.8 0.18 0.08"></a-box>
+        <a-box  material="color:#2E9E72;shader:flat" position="-1.87 -0.95 0" scale="1.35 0.18 0.09"
+          animation="property:scale;from:0.01 0.18 0.09;to:1.35 0.18 0.09;dur:1800;delay:2000;easing:easeOutCubic"
+        ></a-box>
+        <a-text value="75%" color="#2E9E72" font="monoid" align="center" position="-1.5 -1.25 0" scale="0.6 0.6 0.6"></a-text>
+
+        <a-text value="Desktop"   color="#00FFCC" font="monoid" align="center" position=" 1.5 -0.5 0"  scale="0.82 0.82 0.82"></a-text>
+        <a-box  material="color:#0a2215;shader:flat" position="1.5 -0.95 0"  scale="1.8 0.18 0.08"></a-box>
+        <a-box  material="color:#2E9E72;shader:flat" position="1.12 -0.95 0" scale="1.57 0.18 0.09"
+          animation="property:scale;from:0.01 0.18 0.09;to:1.57 0.18 0.09;dur:1800;delay:2200;easing:easeOutCubic"
+        ></a-box>
+        <a-text value="87%" color="#2E9E72" font="monoid" align="center" position=" 1.5 -1.25 0" scale="0.6 0.6 0.6"></a-text>
+
+        <a-text value="Multimedia" color="#00FFCC" font="monoid" align="center" position="0 -2.2 0" scale="0.82 0.82 0.82"></a-text>
+        <a-box  material="color:#0a2215;shader:flat" position="0 -2.65 0"  scale="1.8 0.18 0.08"></a-box>
+        <a-box  material="color:#2E9E72;shader:flat" position="-0.18 -2.65 0" scale="1.44 0.18 0.09"
+          animation="property:scale;from:0.01 0.18 0.09;to:1.44 0.18 0.09;dur:1800;delay:2400;easing:easeOutCubic"
+        ></a-box>
+        <a-text value="80%" color="#2E9E72" font="monoid" align="center" position="0 -2.95 0" scale="0.6 0.6 0.6"></a-text>
       </a-entity>
 
-      <!-- ── Experience Zone (aile arrière) ── -->
+      <!-- ── Experience Zone ── -->
       <a-entity id="experience" position="0 0 -8">
         <!-- Titre -->
         <a-text
           value="EXPERIENCE & FORMATION"
-          color="#00FFCC"
-          font="monoid"
-          align="center"
-          position="0 3.5 0"
-          scale="1.2 1.2 1.2"
+          color="#00FFCC" font="monoid"
+          align="center" position="0 4.0 0"
+          scale="1.1 1.1 1.1"
+          animation="property:position;from:0 4.0 0;to:0 4.1 0;dir:alternate;loop:true;dur:3000;easing:easeInOutSine"
         ></a-text>
-        <!-- Experience card -->
-        <a-box color="#0d1f14" material="opacity: 0.92; transparent: true; side: double" position="-1.4 1.25 0" scale="1.35 1.1 0.05"></a-box>
-        <a-text value="EXPERIENCE" color="#00FFCC" font="monoid" align="center" position="-1.4 1.85 0.03" scale="0.75 0.75 0.75"></a-text>
-        <a-text value=".Net Fullstack Developer" color="#2E9E72" font="monoid" align="center" position="-1.4 1.45 0.03" scale="0.62 0.62 0.62"></a-text>
-        <a-text value="SODSON CORP" color="#E0FFE8" font="monoid" align="center" position="-1.4 1.1 0.03" scale="0.54 0.54 0.54"></a-text>
-        <a-text value="Sept. 2025 → Aujourd'hui" color="#6aab89" font="monoid" align="center" position="-1.4 0.76 0.03" scale="0.5 0.5 0.5"></a-text>
-        <a-text value="Stage Dev Back-End C#" color="#2E9E72" font="monoid" align="center" position="-1.4 0.35 0.03" scale="0.58 0.58 0.58"></a-text>
-        <a-text value="SODSON CORP · Août 2024" color="#E0FFE8" font="monoid" align="center" position="-1.4 0.02 0.03" scale="0.5 0.5 0.5"></a-text>
-        <a-text value="Stage Dev Web Fullstack" color="#2E9E72" font="monoid" align="center" position="-1.4 -0.34 0.03" scale="0.58 0.58 0.58"></a-text>
-        <a-text value="Youpilab · 15 Mai → 15 Août 2025" color="#E0FFE8" font="monoid" align="center" position="-1.4 -0.67 0.03" scale="0.48 0.48 0.48"></a-text>
+        <a-box material="color:#00FFCC;shader:flat;opacity:0.5;transparent:true" scale="4.0 0.004 0.004" position="0 3.68 0"></a-box>
 
-        <!-- Education card -->
-        <a-box color="#0d1f14" material="opacity: 0.92; transparent: true; side: double" position="1.4 1.25 0" scale="1.35 1.1 0.05"></a-box>
-        <a-text value="FORMATION" color="#00FFCC" font="monoid" align="center" position="1.4 1.85 0.03" scale="0.75 0.75 0.75"></a-text>
-        <a-text value="Licence 3" color="#2E9E72" font="monoid" align="center" position="1.4 1.45 0.03" scale="0.62 0.62 0.62"></a-text>
-        <a-text value="2022 → Aujourd'hui" color="#6aab89" font="monoid" align="center" position="1.4 1.1 0.03" scale="0.5 0.5 0.5"></a-text>
-        <a-text value="Baccalauréat C" color="#2E9E72" font="monoid" align="center" position="1.4 0.7 0.03" scale="0.58 0.58 0.58"></a-text>
-        <a-text value="2022" color="#E0FFE8" font="monoid" align="center" position="1.4 0.38 0.03" scale="0.5 0.5 0.5"></a-text>
-        <a-text value="CERTIFICATIONS" color="#00FFCC" font="monoid" align="center" position="1.4 -0.05 0.03" scale="0.56 0.56 0.56"></a-text>
-        <a-text value="Desktop · Mobile · Web · BD" color="#E0FFE8" font="monoid" align="center" position="1.4 -0.38 0.03" scale="0.46 0.46 0.46"></a-text>
+        <!-- Card Experience -->
+        <a-entity position="-1.4 1.25 0">
+          <a-box material="color:#040f09;opacity:0.94;transparent:true;side:double" scale="1.35 2.5 0.06"></a-box>
+          <!-- Bord gauche accent -->
+          <a-box material="color:#00FFCC;shader:flat;opacity:0.6;transparent:true" scale="0.006 2.5 0.07" position="-0.678 0 0"></a-box>
+          <!-- Contenu -->
+          <a-text value="EXPERIENCE"          color="#00FFCC" font="monoid" align="center" position="0 0.98 0.04" scale="0.76 0.76 0.76"></a-text>
+          <a-text value=".Net Fullstack Dev"  color="#2E9E72" font="monoid" align="center" position="0 0.60 0.04" scale="0.62 0.62 0.62"></a-text>
+          <a-text value="SODSON CORP"         color="#E0FFE8" font="monoid" align="center" position="0 0.27 0.04" scale="0.54 0.54 0.54"></a-text>
+          <a-text value="Sept. 2025 → Today"  color="#6aab89" font="monoid" align="center" position="0 -0.06 0.04" scale="0.5 0.5 0.5"></a-text>
+          <!-- Séparateur -->
+          <a-box material="color:#2E9E72;shader:flat;opacity:0.3;transparent:true" scale="1.1 0.003 0.05" position="0 -0.28 0.04"></a-box>
+          <a-text value="Stage Dev Back-End C#" color="#2E9E72" font="monoid" align="center" position="0 -0.52 0.04" scale="0.58 0.58 0.58"></a-text>
+          <a-text value="SODSON CORP · Août 2024" color="#E0FFE8" font="monoid" align="center" position="0 -0.82 0.04" scale="0.5 0.5 0.5"></a-text>
+          <a-text value="Stage Dev Web Fullstack" color="#2E9E72" font="monoid" align="center" position="0 -1.1 0.04" scale="0.58 0.58 0.58"></a-text>
+          <a-text value="Youpilab · Mai→Août 2025" color="#E0FFE8" font="monoid" align="center" position="0 -1.4 0.04" scale="0.48 0.48 0.48"></a-text>
+        </a-entity>
+
+        <!-- Card Formation -->
+        <a-entity position="1.4 1.25 0">
+          <a-box material="color:#040f09;opacity:0.94;transparent:true;side:double" scale="1.35 2.5 0.06"></a-box>
+          <a-box material="color:#2E9E72;shader:flat;opacity:0.6;transparent:true" scale="0.006 2.5 0.07" position="-0.678 0 0"></a-box>
+          <a-text value="FORMATION"           color="#00FFCC" font="monoid" align="center" position="0 0.98 0.04" scale="0.76 0.76 0.76"></a-text>
+          <a-text value="Licence 3"           color="#2E9E72" font="monoid" align="center" position="0 0.60 0.04" scale="0.62 0.62 0.62"></a-text>
+          <a-text value="2022 → Aujourd'hui"  color="#6aab89" font="monoid" align="center" position="0 0.27 0.04" scale="0.5 0.5 0.5"></a-text>
+          <a-box material="color:#2E9E72;shader:flat;opacity:0.3;transparent:true" scale="1.1 0.003 0.05" position="0 0.05 0.04"></a-box>
+          <a-text value="Baccalauréat C"      color="#2E9E72" font="monoid" align="center" position="0 -0.20 0.04" scale="0.58 0.58 0.58"></a-text>
+          <a-text value="2022"                color="#E0FFE8" font="monoid" align="center" position="0 -0.50 0.04" scale="0.5 0.5 0.5"></a-text>
+          <a-box material="color:#2E9E72;shader:flat;opacity:0.3;transparent:true" scale="1.1 0.003 0.05" position="0 -0.72 0.04"></a-box>
+          <a-text value="CERTIFICATIONS"      color="#00FFCC" font="monoid" align="center" position="0 -1.0 0.04" scale="0.56 0.56 0.56"></a-text>
+          <a-text value="Desktop · Mobile"    color="#E0FFE8" font="monoid" align="center" position="0 -1.28 0.04" scale="0.46 0.46 0.46"></a-text>
+          <a-text value="Web · BD"            color="#E0FFE8" font="monoid" align="center" position="0 -1.52 0.04" scale="0.46 0.46 0.46"></a-text>
+        </a-entity>
       </a-entity>
 
-      <!-- ── Contact Zone (aile avant) ── -->
+      <!-- ── Contact Zone ── -->
       <a-entity id="contact" position="0 0 8">
         <!-- Titre -->
         <a-text
           value="CONTACT"
-          color="#00FFCC"
-          font="monoid"
-          align="center"
-          position="0 3 0"
-          scale="1.2 1.2 1.2"
+          color="#00FFCC" font="monoid"
+          align="center" position="0 4.0 0"
+          scale="1.1 1.1 1.1"
+          animation="property:position;from:0 4.0 0;to:0 4.1 0;dir:alternate;loop:true;dur:3000;easing:easeInOutSine"
         ></a-text>
-        <!-- Email -->
-        <a-text value="📧 brandondgbe95@gmail.com" color="#2E9E72" font="monoid" align="center" position="0 2 0" scale="0.7 0.7 0.7"></a-text>
-        <!-- Phone -->
-        <a-text value="📱 +229 52323535 / 58360861" color="#2E9E72" font="monoid" align="center" position="0 1.2 0" scale="0.7 0.7 0.7"></a-text>
-        <!-- GitHub -->
-        <a-text value="🐙 github.com/brandon311005" color="#2E9E72" font="monoid" align="center" position="0 0.4 0" scale="0.7 0.7 0.7"></a-text>
-        <!-- Languages -->
-        <a-text value="LANGUES" color="#00FFCC" font="monoid" align="center" position="0 -0.8 0" scale="0.9 0.9 0.9"></a-text>
-        <a-text value="🇫🇷 Français (Natif)" color="#2E9E72" font="monoid" align="center" position="0 -1.6 0" scale="0.6 0.6 0.6"></a-text>
-        <a-text value="🇬🇧 Anglais (Basique)" color="#2E9E72" font="monoid" align="center" position="0 -2.2 0" scale="0.6 0.6 0.6"></a-text>
+        <a-box material="color:#00FFCC;shader:flat;opacity:0.5;transparent:true" scale="2.2 0.004 0.004" position="0 3.68 0"></a-box>
+
+        <!-- Panel contact -->
+        <a-entity position="0 1.2 0">
+          <a-box material="color:#040f09;opacity:0.92;transparent:true;side:double" scale="3.2 2.8 0.06"></a-box>
+          <a-box material="color:#00FFCC;shader:flat;opacity:0.5;transparent:true" scale="3.2 0.005 0.07" position="0 1.4 0"></a-box>
+          <a-box material="color:#00FFCC;shader:flat;opacity:0.5;transparent:true" scale="3.2 0.005 0.07" position="0 -1.4 0"></a-box>
+          <!-- Contenu -->
+          <a-text value="📧 brandondgbe95@gmail.com"                  color="#2E9E72" font="monoid" align="center" position="0 0.9 0.04" scale="0.68 0.68 0.68"></a-text>
+          <a-text value="📱 +229 0152323535 / 0158360861"             color="#2E9E72" font="monoid" align="center" position="0 0.35 0.04" scale="0.65 0.65 0.65"></a-text>
+          <a-text value="🐙 github.com/brandon311005"                 color="#2E9E72" font="monoid" align="center" position="0 -0.15 0.04" scale="0.62 0.62 0.62"></a-text>
+          <a-text value="🐙 github.com/Brandondgb"                   color="#2E9E72" font="monoid" align="center" position="0 -0.50 0.04" scale="0.62 0.62 0.62"></a-text>
+          <!-- Séparateur -->
+          <a-box material="color:#2E9E72;shader:flat;opacity:0.25;transparent:true" scale="2.8 0.003 0.05" position="0 -0.82 0.04"></a-box>
+          <a-text value="LANGUES"               color="#00FFCC" font="monoid" align="center" position="0 -1.05 0.04" scale="0.78 0.78 0.78"></a-text>
+          <a-text value="🇫🇷 Français (Natif)"  color="#2E9E72" font="monoid" align="center" position="-0.7 -1.4 0.04" scale="0.58 0.58 0.58"></a-text>
+          <a-text value="🇬🇧 Anglais (Basique)" color="#2E9E72" font="monoid" align="center" position=" 0.7 -1.4 0.04" scale="0.58 0.58 0.58"></a-text>
+        </a-entity>
       </a-entity>
 
-      <!-- ── Skybox (étoilée) ── -->
-      <a-sky color="#020a05"></a-sky>
+      <!-- ── Skybox ── -->
+      <a-sky color="#000803"></a-sky>
+
+      <!-- ── Étoiles de fond (petites sphères) ── -->
+      <a-entity id="stars">
+        <a-sphere material="color:#ffffff;shader:flat;opacity:0.7;transparent:true" radius="0.04" position="15 12 -18"></a-sphere>
+        <a-sphere material="color:#ffffff;shader:flat;opacity:0.5;transparent:true" radius="0.03" position="-20 8 -15"></a-sphere>
+        <a-sphere material="color:#00FFCC;shader:flat;opacity:0.3;transparent:true" radius="0.035" position="12 15 -10"></a-sphere>
+        <a-sphere material="color:#ffffff;shader:flat;opacity:0.6;transparent:true" radius="0.025" position="-14 10 -20"></a-sphere>
+        <a-sphere material="color:#2E9E72;shader:flat;opacity:0.4;transparent:true" radius="0.04"  position="18 6 -12"></a-sphere>
+        <a-sphere material="color:#ffffff;shader:flat;opacity:0.55;transparent:true" radius="0.03" position="-8 18 -16"></a-sphere>
+        <a-sphere material="color:#ffffff;shader:flat;opacity:0.45;transparent:true" radius="0.028" position="5 20 -14"></a-sphere>
+        <a-sphere material="color:#00FFCC;shader:flat;opacity:0.25;transparent:true" radius="0.05"  position="-18 14 -8"></a-sphere>
+        <a-sphere material="color:#ffffff;shader:flat;opacity:0.6;transparent:true" radius="0.022" position="10 9 -19"></a-sphere>
+        <a-sphere material="color:#2E9E72;shader:flat;opacity:0.35;transparent:true" radius="0.038" position="-6 16 -17"></a-sphere>
+        <a-sphere material="color:#ffffff;shader:flat;opacity:0.5;transparent:true" radius="0.026" position="16 11 -8"></a-sphere>
+        <a-sphere material="color:#ffffff;shader:flat;opacity:0.4;transparent:true" radius="0.033" position="-12 7 -18"></a-sphere>
+      </a-entity>
 
     </a-scene>
+
+    <!-- ══════════════════════════════════════
+         SCRIPTS
+    ══════════════════════════════════════ -->
+
+    <!-- Cursor personnalisé -->
+    <script>
+      const cur = document.getElementById('cursor');
+      const dot = document.getElementById('cursor-dot');
+      document.addEventListener('mousemove', e => {
+        cur.style.left = e.clientX + 'px';
+        cur.style.top  = e.clientY + 'px';
+        dot.style.left = e.clientX + 'px';
+        dot.style.top  = e.clientY + 'px';
+      });
+    </script>
+
+    <!-- Loader amélioré avec terminal typewriter -->
+    <script>
+      (function() {
+        const steps = [
+          { id: 'l0', pct: 10, delay: 300 },
+          { id: 'l1', pct: 28, delay: 650 },
+          { id: 'l2', pct: 48, delay: 980 },
+          { id: 'l3', pct: 62, delay: 1280 },
+          { id: 'l4', pct: 76, delay: 1580 },
+          { id: 'l5', pct: 90, delay: 1880 },
+          { id: 'l6', pct: 100, delay: 2200 },
+        ];
+        const bar  = document.getElementById('loader-bar');
+        const pct  = document.getElementById('loader-pct');
+        steps.forEach(s => {
+          setTimeout(() => {
+            const el = document.getElementById(s.id);
+            if (el) el.classList.add('show');
+            bar.style.width = s.pct + '%';
+            pct.textContent = s.pct + '%';
+          }, s.delay);
+        });
+        setTimeout(() => {
+          const l = document.getElementById('loader');
+          if (l) { l.style.transition = 'opacity 0.5s ease'; l.style.opacity = '0'; setTimeout(() => l.remove(), 520); }
+        }, 2900);
+      })();
+    </script>
+
+    <!-- HUD Zone Tracker -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const scene = document.getElementById('main-scene');
+        const zoneEl = document.getElementById('hud-zone');
+        const coordEl = document.getElementById('hud-coords');
+        if (!scene) return;
+
+        const zones = [
+          { name: 'HUB CENTRAL',      x: 0,  z:  0 },
+          { name: 'PROJECTS HIGHLIGHTS', x: -8, z:  0 },
+          { name: 'SKILLS CORE',        x:  8, z:  0 },
+          { name: 'EXPERIENCE & FORMATION', x: 0, z: -8 },
+          { name: 'CONTACT',            x:  0, z:  8 },
+        ];
+
+        scene.addEventListener('loaded', () => {
+          const rig = document.getElementById('rig');
+          if (!rig) return;
+          setInterval(() => {
+            const p = rig.getAttribute('position');
+            if (!p) return;
+            const cx = p.x || 0; const cz = p.z || 0;
+            coordEl.textContent = 'x:' + cx.toFixed(1) + ' z:' + cz.toFixed(1);
+            let nearest = zones[0]; let dist = Infinity;
+            zones.forEach(z => {
+              const d = Math.hypot(cx - z.x, cz - z.z);
+              if (d < dist) { dist = d; nearest = z; }
+            });
+            if (zoneEl.textContent !== nearest.name) {
+              zoneEl.style.opacity = '0';
+              zoneEl.style.transition = 'opacity 0.25s ease';
+              setTimeout(() => {
+                zoneEl.textContent = nearest.name;
+                zoneEl.style.opacity = '1';
+              }, 260);
+            }
+          }, 300);
+        });
+      });
+    </script>
 
     <script type="module" src="/src/main.js"></script>
   </body>
